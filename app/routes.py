@@ -263,18 +263,32 @@ def chatbot():  # AI Doctor Chatbot page
 
     user_message = None
     assistant_reply = None
+    # Get mode from query parameter (GET) or form (POST), default to "chat"
+    mode = request.args.get("mode") or request.form.get("mode", "chat")
+    if mode not in ["chat", "symptoms"]:
+        mode = "chat"  # Sanitize mode value
 
     if request.method == "POST":
+        # Get mode from form or default to chat
+        mode = request.form.get("mode", "chat")
+        if mode not in ["chat", "symptoms"]:
+            mode = "chat"  # Sanitize mode value
+        
         user_message = request.form.get("message", "").strip()
 
         if not user_message:
             flash("Please type a message before sending.", "error")
-            return redirect(url_for("main.chatbot"))
+            return redirect(url_for("main.chatbot", mode=mode))
 
         user_id = session.get("user_id")
 
         try:
-            assistant_reply = chatbot_service.send_message(user_id, user_message)
+            if mode == "symptoms":
+                # Use symptom analysis mode
+                assistant_reply = chatbot_service.analyze_symptoms(user_message, user_id)
+            else:
+                # Use regular chat mode
+                assistant_reply = chatbot_service.send_message(user_id, user_message)
         except RuntimeError as e:
             # Handle specific errors like missing API key
             error_msg = str(e)
@@ -297,6 +311,7 @@ def chatbot():  # AI Doctor Chatbot page
         "chatbot.html",
         user_message = user_message,
         assistant_reply = assistant_reply,
+        mode = mode,
     )
 
 @main_bp.route("/settings", methods=["GET"])
