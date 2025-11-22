@@ -1,0 +1,422 @@
+<!-- Uses dashboard_layout.html (extends base.html) -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Account Settings – Multi Disease Detection System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+            background: #f5f8fc;
+            color: #0f172a;
+        }
+
+        .page-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
+            padding: 1.75rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .sections-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .sections-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .section-card {
+            border-radius: 14px;
+            padding: 1.2rem 1.25rem 1.25rem;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 0.9rem;
+        }
+
+        .profile-row {
+            display: flex;
+            flex-direction: column;
+            row-gap: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .profile-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #9ca3af;
+        }
+
+        .profile-value {
+            font-weight: 500;
+        }
+
+        .field-group {
+            margin-bottom: 0.7rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+
+        input[type="password"],
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 0.55rem 0.7rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            background: #ffffff;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.5rem 0.95rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.15s ease, transform 0.05s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-outline:hover {
+            background: #dbeafe;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .form-actions {
+            margin-top: 0.4rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .danger-zone {
+            border: 1px solid rgba(220, 38, 38, 0.25);
+            background: rgba(248, 113, 113, 0.03);
+        }
+
+        .danger-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #ef4444;
+            margin-bottom: 0.3rem;
+        }
+
+        .disclaimer {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 0.75rem 0.9rem;
+            border-radius: 8px;
+            color: #1e40af;
+        }
+
+        .flash-container {
+            margin-bottom: 1rem;
+        }
+
+        .flash {
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .flash-success {
+            background: #ecfdf3;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .flash-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .flash-type {
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .flash-msg {
+            flex: 1;
+        }
+
+        .about-text {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-highlight {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="card">
+        <h1>Account Settings</h1>
+        <p class="subtitle">
+            Manage your profile, security, and data for the Multi Disease Detection System.
+        </p>
+
+        <!-- Flash messages -->
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                            <span class="flash-type">
+                                {% if category == 'success' %}Success{% else %}Notice{% endif %}
+                            </span>
+                            <span class="flash-msg">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="sections-grid">
+            <!-- Left column: Profile + Password + History -->
+            <div class="left-col">
+                <!-- Profile section -->
+                <div class="section-card">
+                    <div class="section-title">Profile</div>
+                    <div class="section-desc">
+                        Basic information about your account. You can use this account to access all features:
+                        heart detection, brain MRI analysis, and the AI doctor chatbot.
+                    </div>
+
+                    <div class="profile-row">
+                        <div>
+                            <div class="profile-label">Username</div>
+                            <div class="profile-value">{{ profile.username }}</div>
+                        </div>
+                        <div>
+                            <div class="profile-label">Email</div>
+                            <div class="profile-value">{{ profile.email }}</div>
+                        </div>
+                        <div>
+                            <div class="profile-label">Member since</div>
+                            <div class="profile-value">{{ profile.created_at }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change password -->
+                <div class="section-card" style="margin-top: 1rem;">
+                    <div class="section-title">Change password</div>
+                    <div class="section-desc">
+                        Update your password to keep your account secure. Your password is always stored
+                        as a secure hash – never in plain text.
+                    </div>
+
+                    <form method="post" action="{{ url_for('main.change_password') }}">
+                        <div class="field-group">
+                            <label for="old_password">Current password</label>
+                            <input
+                                type="password"
+                                id="old_password"
+                                name="old_password"
+                                required
+                            />
+                        </div>
+
+                        <div class="field-group">
+                            <label for="new_password">New password</label>
+                            <input
+                                type="password"
+                                id="new_password"
+                                name="new_password"
+                                required
+                            />
+                        </div>
+
+                        <div class="field-group">
+                            <label for="confirm_password">Confirm new password</label>
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Update password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Clear history -->
+                <div class="section-card" style="margin-top: 1rem;">
+                    <div class="section-title">Prediction history</div>
+                    <div class="section-desc">
+                        You can clear all saved logs for your heart and brain predictions. This only affects
+                        stored records; it does not change the models or your account.
+                    </div>
+
+                    <form
+                        method="post"
+                        action="{{ url_for('main.clear_history') }}"
+                        onsubmit="return confirm('Are you sure you want to clear all prediction history? This cannot be undone.');"
+                    >
+                        <button type="submit" class="btn btn-outline btn-sm">
+                            Clear prediction history
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right column: Danger zone + About -->
+            <div class="right-col">
+                <!-- Danger zone: delete account -->
+                <div class="section-card danger-zone">
+                    <div class="danger-label">Danger zone</div>
+                    <div class="section-title">Delete account</div>
+                    <div class="section-desc">
+                        Deleting your account will permanently remove your login and any associated prediction
+                        logs. This action cannot be undone.
+                    </div>
+
+                    <form
+                        method="post"
+                        action="{{ url_for('main.delete_account') }}"
+                        onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.');"
+                    >
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Delete my account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- About & medical disclaimer -->
+                <div class="section-card" style="margin-top: 1rem;">
+                    <div class="section-title">About this application</div>
+                    <p class="about-text">
+                        <span class="about-highlight">Multi Disease Detection System</span>
+                        is an educational web application that combines machine-learning models
+                        for heart-disease risk estimation and deep-learning models for brain MRI
+                        classification (glioma, meningioma, pituitary, or no tumor).
+                    </p>
+                    <p class="about-text">
+                        The integrated AI doctor chatbot uses a large language model to help you
+                        understand your results and general medical topics in simple language.
+                        It automatically uses your latest heart and brain model outputs as context
+                        when answering.
+                    </p>
+
+                    <div class="disclaimer">
+                        <strong>Medical disclaimer:</strong>
+                        All predictions and explanations in this application are for
+                        <strong>educational purposes only</strong>. The models can be wrong, and
+                        nothing here should be treated as a diagnosis, prescription, or a substitute
+                        for professional medical advice. Always consult a qualified doctor or
+                        healthcare provider for any decisions about your health.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

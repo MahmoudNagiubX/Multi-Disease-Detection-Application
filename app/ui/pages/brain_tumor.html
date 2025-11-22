@@ -1,0 +1,64 @@
+<!-- Uses detection_layout.html (extends base.html) -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brain Tumor Detection – Multi Disease Detection System</title>
+</head>
+<body>
+    <h1>Brain Tumor Detection</h1>
+
+    <p>
+        Upload an MRI brain image to get an AI-based educational prediction.
+        This tool is <strong>not</strong> a medical diagnosis and must not replace a real doctor.
+    </p>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li><strong>{{ category }}:</strong> {{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <h2>Upload MRI Image</h2>
+
+  <form method="post"
+      action="{{ url_for('main.brain_tumor') }}"
+      enctype="multipart/form-data">
+      <input type="file" name="mri_image" accept="image/*" required>
+      <button type="submit">Analyze MRI</button>
+  </form>
+
+  {% if result %}
+    <h2>Prediction Result</h2>
+
+      <p><strong>Predicted class:</strong> {{ result.predicted_class }}</p>
+      <p><strong>Confidence:</strong> {{ (result.probability * 100) | round(1) }}%</p>
+      <p><strong>Is tumor?</strong> {{ "Yes" if result.is_tumor else "No" }}</p>
+
+      <h3>Class probabilities</h3>
+    <ul>
+      {% for cls, prob in result.probabilities.items() %}
+      <li>{{ cls }}: {{ (prob * 100) | round(1) }}%</li>
+      {% endfor %}
+    </ul>
+      <h3>Suggestion</h3>
+      <p>{{ result.suggestion }}</p>
+  {% endif %}
+
+{% if result and result.log_id is not none %}
+    <a
+        href="{{ url_for('main.brain_report', log_id=result.log_id) }}"
+        class="btn btn-secondary"
+    >
+        Download Brain MRI Report (PDF)
+    </a>
+{% endif %}
+
+    <p><a href="{{ url_for('main.dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>

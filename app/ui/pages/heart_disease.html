@@ -1,0 +1,200 @@
+<!-- Uses detection_layout.html (extends base.html) -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Heart Disease Detection – Multi Disease Detection System</title>
+</head>
+<body>
+    <h1>Heart Disease Detection</h1>
+
+    <p>
+        This tool gives an educational estimate of heart disease risk based on several factors.
+        It is <strong>not</strong> a real diagnosis or replacement for a doctor.
+    </p>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li><strong>{{ category }}:</strong> {{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <h2>Enter Your Information</h2>
+
+    <form method="post" action="{{ url_for('main.heart_disease') }}">
+        <!-- Section: General Info -->
+        <fieldset>
+            <legend>General Information</legend>
+
+            <label>
+                Age (years):
+                <input type="number" name="age" min="0" required>
+            </label>
+            <br><br>
+
+            <label>
+                Sex:
+                <select name="sex" required>
+                    <option value="1">Male</option>
+                    <option value="0">Female</option>
+                </select>
+            </label>
+            <br><br>
+
+            <label>
+                Chest Pain Type (cp):
+                <select name="cp" required>
+                    <option value="0">0 – Typical angina</option>
+                    <option value="1">1 – Atypical angina</option>
+                    <option value="2">2 – Non-anginal pain</option>
+                    <option value="3">3 – Asymptomatic</option>
+                </select>
+            </label>
+            <br><br>
+        </fieldset>
+
+        <br>
+
+        <!-- Section: Blood Pressure & Cholesterol -->
+        <fieldset>
+            <legend>Blood Pressure & Cholesterol</legend>
+
+            <label>
+                Resting Blood Pressure (trestbps, mm Hg):
+                <input type="number" name="trestbps" min="0" required>
+            </label>
+            <br><br>
+
+            <label>
+                Cholesterol (chol, mg/dL):
+                <input type="number" name="chol" min="0" required>
+            </label>
+            <br><br>
+
+            <label>
+                Fasting Blood Sugar &gt; 120 mg/dL (fbs):
+                <select name="fbs" required>
+                    <option value="0">No (≤ 120 mg/dL)</option>
+                    <option value="1">Yes (&gt; 120 mg/dL)</option>
+                </select>
+            </label>
+            <br><br>
+        </fieldset>
+
+        <br>
+
+        <!-- Section: ECG & Exercise -->
+        <fieldset>
+            <legend>ECG & Exercise Data</legend>
+
+            <label>
+                Resting ECG (restecg):
+                <select name="restecg" required>
+                    <option value="0">0 – Normal</option>
+                    <option value="1">1 – ST-T wave abnormality</option>
+                    <option value="2">2 – Left ventricular hypertrophy</option>
+                </select>
+            </label>
+            <br><br>
+
+            <label>
+                Maximum Heart Rate Achieved (thalach):
+                <input type="number" name="thalach" min="0" required>
+            </label>
+            <br><br>
+
+            <label>
+                Exercise-induced Angina (exang):
+                <select name="exang" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </label>
+            <br><br>
+
+            <label>
+                ST Depression Induced by Exercise (oldpeak):
+                <input type="number" step="0.1" name="oldpeak" required>
+            </label>
+            <br><br>
+
+            <label>
+                Slope of Peak Exercise ST Segment (slope):
+                <select name="slope" required>
+                    <option value="0">0 – Upsloping</option>
+                    <option value="1">1 – Flat</option>
+                    <option value="2">2 – Downsloping</option>
+                </select>
+            </label>
+            <br><br>
+        </fieldset>
+
+        <br>
+
+        <!-- Section: Vessels & Thal -->
+        <fieldset>
+            <legend>Vessels & Thalassemia</legend>
+
+            <label>
+                Number of Major Vessels (ca, 0–3):
+                <input type="number" name="ca" min="0" max="3" required>
+            </label>
+            <br><br>
+
+            <label>
+                Thalassemia (thal):
+                <select name="thal" required>
+                    <option value="1">1 – Normal</option>
+                    <option value="2">2 – Fixed defect</option>
+                    <option value="3">3 – Reversible defect</option>
+                </select>
+            </label>
+            <br><br>
+        </fieldset>
+
+        <br>
+
+        <button type="submit">Predict Risk</button>
+    </form>
+
+    {% if result %}
+        <hr>
+        <h2>Prediction Result</h2>
+
+        <p><strong>Risk Level:</strong>
+            {{ result.risk_label if result.risk_label is defined else result["risk_label"] }}
+        </p>
+
+        <p><strong>Estimated Probability of Disease:</strong>
+            {{ (result.probability if result.probability is defined else result["probability"]) | round(3) }}
+        </p>
+
+        <p><strong>Input Summary:</strong>
+            {{ result.input_summary if result.input_summary is defined else result["input_summary"] }}
+        </p>
+
+        <h3>Suggestion</h3>
+        <p>
+            {{ result.suggestion if result.suggestion is defined else result["suggestion"] }}
+        </p>
+    {% endif %}
+
+{% if result and result.log_id is not none %}
+    <a
+        href="{{ url_for('main.heart_report', log_id=result.log_id) }}"
+        class="btn btn-secondary"
+    >
+        Download Heart Report (PDF)
+    </a>
+{% endif %}
+
+
+
+    <p><a href="{{ url_for('main.dashboard') }}">Back to Dashboard</a></p>
+</body>
+</html>

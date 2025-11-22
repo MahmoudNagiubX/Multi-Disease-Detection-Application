@@ -1,0 +1,22 @@
+<!-- Layout: dashboard_layout.html (extends base.html) -->
+<!-- CSS: main.css, components.css, dashboard.css -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard – Multi Disease Detection System</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>Hello, {{ username }}!</p>
+
+    <ul>
+        <li><a href="{{ url_for('main.heart_disease') }}">Heart Disease Detection</a></li>
+        <li><a href="{{ url_for('main.brain_tumor') }}">Brain Tumor Detection</a></li>
+        <li><a href="{{ url_for('main.chatbot') }}">Chatbot</a></li>
+        <li><a href="{{ url_for('main.settings') }}">Settings</a></li>
+    </ul>
+
+    <p><a href="{{ url_for('main.logout') }}">Logout</a></p>
+</body>
+</html>

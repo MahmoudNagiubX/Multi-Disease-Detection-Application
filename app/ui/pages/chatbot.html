@@ -1,0 +1,225 @@
+<!-- Uses dashboard_layout.html (extends base.html) -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>AI Doctor Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f8fc;
+            color: #1f2933;
+        }
+
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 1.5rem;
+        }
+
+        h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.6rem;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .disclaimer {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #1d4ed8;
+            margin-bottom: 1.25rem;
+        }
+
+        .chat-box {
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            padding: 1rem;
+            max-height: 420px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 0.9rem;
+            max-width: 90%;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .message.user {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 0.6rem 0.8rem;
+            border-radius: 999px;
+        }
+
+        .message.user .message-bubble {
+            background: #2563eb;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-bubble {
+            background: #e5f2ff;
+            color: #111827;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.15rem;
+            color: #6b7280;
+        }
+
+        form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            margin-top: 0.5rem;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 60px;
+            max-height: 120px;
+            resize: vertical;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+            background: #ffffff;
+        }
+
+        button {
+            padding: 0.6rem 1rem;
+            border-radius: 999px;
+            border: none;
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.15s ease, transform 0.05s ease;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .hint {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .empty-state {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                padding: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="card">
+        <h1>AI Doctor Chatbot</h1>
+        <p class="subtitle">
+            Ask questions about your heart risk, brain MRI result, and general medical topics.
+        </p>
+
+        <div class="disclaimer">
+            <strong>Important:</strong>
+            This chatbot is for <strong>educational purposes only</strong>. It does not provide
+            medical diagnoses, prescriptions, or treatment plans. Always consult a qualified
+            healthcare professional for real medical concerns.
+        </div>
+
+        <div class="chat-box">
+            {% if user_message or assistant_reply %}
+                {% if user_message %}
+                    <div class="message user">
+                        <div class="message-label">You</div>
+                        <div class="message-bubble">
+                            {{ user_message }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if assistant_reply %}
+                    <div class="message assistant">
+                        <div class="message-label">AI Doctor (Educational)</div>
+                        <div class="message-bubble">
+                            {{ assistant_reply }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    No messages yet. Ask your first question about your latest heart or brain results.
+                </div>
+            {% endif %}
+        </div>
+
+        <form method="post" action="{{ url_for('main.chatbot') }}" id="chatbot-form">
+            <textarea
+                name="message"
+                id="message-input"
+                placeholder="Example: Based on my last heart and brain checks, should I be worried about my health?"
+                required
+            ></textarea>
+
+            <button type="submit">Send</button>
+        </form>
+
+        <div class="hint">
+            The chatbot automatically uses your latest heart-disease and brain-tumor model results
+            in the background (if available), so you don't need to re-enter your values.
+        </div>
+    </div>
+</div>
+</body>
+</html>
