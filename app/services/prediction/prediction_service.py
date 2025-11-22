@@ -24,106 +24,126 @@ class PredictionService:    # Handles prediction logic for heart disease and bra
         """
         Take raw form data -> build feature dict -> call HeartDiseaseModel ->
         log prediction (if user_id) -> return structured result + log_id.
+        Raises RuntimeError if model fails or prediction fails.
         """
 
-        # --------------------
-        # 1) Parse inputs
-        # --------------------
-        def _parse_binary(val: Optional[str]) -> float:
-            if val is None:
+        try:
+            # --------------------
+            # 1) Parse inputs
+            # --------------------
+            def _parse_binary(val: Optional[str]) -> float:
+                if val is None:
+                    return 0.0
+                val = str(val).strip().lower()
+                if val in ("1", "yes", "y", "true"):
+                    return 1.0
+                if val in ("0", "no", "n", "false"):
+                    return 0.0
                 return 0.0
-            val = str(val).strip().lower()
-            if val in ("1", "yes", "y", "true"):
-                return 1.0
-            if val in ("0", "no", "n", "false"):
-                return 0.0
-            return 0.0
 
-        # --- Parse numeric fields (adapt to your form names) ---
-        age = self._parse_float(form_data.get("age"))
-        trestbps = self._parse_float(form_data.get("trestbps"))
-        chol = self._parse_float(form_data.get("chol"))
-        thalach = self._parse_float(form_data.get("thalach"))
-        oldpeak = self._parse_float(form_data.get("oldpeak"))
-        ca = self._parse_float(form_data.get("ca"))
+            # --- Parse numeric fields (adapt to your form names) ---
+            age = self._parse_float(form_data.get("age"))
+            trestbps = self._parse_float(form_data.get("trestbps"))
+            chol = self._parse_float(form_data.get("chol"))
+            thalach = self._parse_float(form_data.get("thalach"))
+            oldpeak = self._parse_float(form_data.get("oldpeak"))
+            ca = self._parse_float(form_data.get("ca"))
 
-        # --- Parse binary / categorical fields ---
-        sex = _parse_binary(form_data.get("sex"))
-        fbs = _parse_binary(form_data.get("fbs"))
-        exang = _parse_binary(form_data.get("exang"))
+            # --- Parse binary / categorical fields ---
+            sex = _parse_binary(form_data.get("sex"))
+            fbs = _parse_binary(form_data.get("fbs"))
+            exang = _parse_binary(form_data.get("exang"))
 
-        # Chest pain type, restecg, slope, thal – assuming they come as numeric codes
-        cp = self._parse_float(form_data.get("cp"))
-        restecg = self._parse_float(form_data.get("restecg"))
-        slope = self._parse_float(form_data.get("slope"))
-        thal = self._parse_float(form_data.get("thal"))
+            # Chest pain type, restecg, slope, thal – assuming they come as numeric codes
+            cp = self._parse_float(form_data.get("cp"))
+            restecg = self._parse_float(form_data.get("restecg"))
+            slope = self._parse_float(form_data.get("slope"))
+            thal = self._parse_float(form_data.get("thal"))
 
-        # Build features dict (keys must match training script)
-        features = {
-            "age": age,
-            "sex": sex,
-            "cp": cp,
-            "trestbps": trestbps,
-            "chol": chol,
-            "fbs": fbs,
-            "restecg": restecg,
-            "thalach": thalach,
-            "exang": exang,
-            "oldpeak": oldpeak,
-            "slope": slope,
-            "ca": ca,
-            "thal": thal,
-        }
+            # Build features dict (keys must match training script)
+            features = {
+                "age": age,
+                "sex": sex,
+                "cp": cp,
+                "trestbps": trestbps,
+                "chol": chol,
+                "fbs": fbs,
+                "restecg": restecg,
+                "thalach": thalach,
+                "exang": exang,
+                "oldpeak": oldpeak,
+                "slope": slope,
+                "ca": ca,
+                "thal": thal,
+            }
 
-        # --------------------
-        # 2) Predict
-        # --------------------
-        heart_model = self.models.get_heart_model()
-        risk_label, probability = heart_model.predict(features)
+            # --------------------
+            # 2) Predict
+            # --------------------
+            try:
+                heart_model = self.models.get_heart_model()
+                risk_label, probability = heart_model.predict(features)
+            except RuntimeError as e:
+                raise RuntimeError(f"Heart disease model error: {str(e)}")
+            except Exception as e:
+                print(f"[ERROR] PredictionService.predict_heart_disease: Model prediction failed: {e}")
+                raise RuntimeError("Heart disease prediction failed. Please try again later.")
 
-        # Short summary for DB
-        input_summary = (
-            f"age={age}, sex={sex}, cp={cp}, trestbps={trestbps}, chol={chol}, "
-            f"fbs={fbs}, restecg={restecg}, thalach={thalach}, exang={exang}, "
-            f"oldpeak={oldpeak}, slope={slope}, ca={ca}, thal={thal}"
-        )
-
-        # --------------------
-        # 3) Log to DB + get log_id
-        # --------------------
-        log_id: Optional[int] = None
-
-        if user_id is not None:
-            # Insert log and get the inserted row ID in the same transaction
-            log_id = self.db.execute_and_get_id(
-                """
-                INSERT INTO prediction_logs (
-                    user_id, model_type, input_summary,
-                    prediction_result, probability, created_at
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    user_id,
-                    "heart_disease",
-                    input_summary,
-                    risk_label,
-                    float(probability),
-                    self._now_iso(),
-                ),
+            # Short summary for DB
+            input_summary = (
+                f"age={age}, sex={sex}, cp={cp}, trestbps={trestbps}, chol={chol}, "
+                f"fbs={fbs}, restecg={restecg}, thalach={thalach}, exang={exang}, "
+                f"oldpeak={oldpeak}, slope={slope}, ca={ca}, thal={thal}"
             )
 
-        # --------------------
-        # 4) Return result dict (used in templates)
-        # --------------------
-        return {
-            "risk_label": risk_label,
-            "probability": probability,
-            "features": features,
-            "input_summary": input_summary,
-            "suggestion": self._generate_heart_suggestion(risk_label),
-            "log_id": log_id,
-        }
+            # --------------------
+            # 3) Log to DB + get log_id
+            # --------------------
+            log_id: Optional[int] = None
+
+            if user_id is not None:
+                try:
+                    # Insert log and get the inserted row ID in the same transaction
+                    log_id = self.db.execute_and_get_id(
+                        """
+                        INSERT INTO prediction_logs (
+                            user_id, model_type, input_summary,
+                            prediction_result, probability, created_at
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            user_id,
+                            "heart_disease",
+                            input_summary,
+                            risk_label,
+                            float(probability),
+                            self._now_iso(),
+                        ),
+                    )
+                except Exception as e:
+                    print(f"[ERROR] PredictionService.predict_heart_disease: Failed to log prediction: {e}")
+                    # Continue without log_id if logging fails
+
+            # --------------------
+            # 4) Return result dict (used in templates)
+            # --------------------
+            return {
+                "risk_label": risk_label,
+                "probability": probability,
+                "features": features,
+                "input_summary": input_summary,
+                "suggestion": self._generate_heart_suggestion(risk_label),
+                "log_id": log_id,
+            }
+        except RuntimeError:
+            # Re-raise RuntimeErrors as-is (they have user-friendly messages)
+            raise
+        except Exception as e:
+            print(f"[ERROR] PredictionService.predict_heart_disease: Unexpected error: {type(e).__name__}: {e}")
+            import traceback
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            raise RuntimeError("An unexpected error occurred during heart disease prediction. Please try again.")
 
     def _generate_heart_suggestion(self, risk_label: str) -> str: # Treatment suggestion
         if risk_label == "High":
@@ -145,59 +165,90 @@ class PredictionService:    # Handles prediction logic for heart disease and bra
             )
     
     def predict_brain_tumor(self, image_path: str, user_id: Optional[int]) -> Dict[str, Any]:
-        # Take an MRI image path -> call BrainTumorModel -> log prediction -> return result
+        """
+        Take an MRI image path -> call BrainTumorModel -> log prediction -> return result.
+        Raises RuntimeError if model fails or prediction fails.
+        """
+        try:
+            # Get brain model
+            try:
+                brain_model = self.models.get_brain_model()
+            except RuntimeError as e:
+                raise RuntimeError(f"Brain tumor model error: {str(e)}")
+            
+            # Run prediction
+            try:
+                model_result = brain_model.predict(image_path)
+            except FileNotFoundError as e:
+                print(f"[ERROR] PredictionService.predict_brain_tumor: Image file not found: {e}")
+                raise RuntimeError("Image file not found. Please ensure the file was uploaded correctly.")
+            except ValueError as e:
+                print(f"[ERROR] PredictionService.predict_brain_tumor: Image preprocessing error: {e}")
+                raise RuntimeError(f"Error processing image: {str(e)}. Please ensure you're uploading a valid image file.")
+            except Exception as e:
+                print(f"[ERROR] PredictionService.predict_brain_tumor: Model prediction failed: {e}")
+                raise RuntimeError("Brain tumor prediction failed. Please try again later.")
+            
+            predicted_class: str = model_result.get("predicted_class", "unknown")
+            probability: float = float(model_result.get("probability", 0.0))
+            probabilities: Dict[str, float] = model_result.get("probabilities", {})
+            
+            # Decide if this is considered "tumor" or "no_tumor"
+            tumor_classes = {"glioma", "meningioma", "pituitary"}
+            is_tumor = predicted_class in tumor_classes
+            
+            # Build a short input summary for logging
+            input_summary = f"image_path={image_path.name if hasattr(image_path, 'name') else str(image_path)}"
 
-        brain_model = self.models.get_brain_model()
-        model_result = brain_model.predict(image_path)
-        
-        predicted_class: str = model_result.get("predicted_class", "unknown")
-        probability: float = float(model_result.get("probability", 0.0))
-        probabilities: Dict[str, float] = model_result.get("probabilities", {})
-        
-        # Decide if this is considered "tumor" or "no_tumor"
-        tumor_classes = {"glioma", "meningioma", "pituitary"}
-        is_tumor = predicted_class in tumor_classes
-        
-        # Build a short input summary for logging
-        input_summary = f"image_path={image_path.name if hasattr(image_path, 'name') else str(image_path)}"
+            # --------------------
+            # Log prediction in DB + get log_id
+            # --------------------
+            log_id: Optional[int] = None
 
-        # --------------------
-        # Log prediction in DB + get log_id
-        # --------------------
-        log_id: Optional[int] = None
+            if user_id is not None:
+                try:
+                    # Insert log and get the inserted row ID in the same transaction
+                    log_id = self.db.execute_and_get_id(
+                        """
+                        INSERT INTO prediction_logs (
+                            user_id, model_type, input_summary,
+                            prediction_result, probability, created_at
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            user_id,
+                            "brain_tumor_multiclass",
+                            input_summary,
+                            predicted_class,
+                            probability,
+                            self._now_iso(),
+                        ),
+                    )
+                except Exception as e:
+                    print(f"[ERROR] PredictionService.predict_brain_tumor: Failed to log prediction: {e}")
+                    # Continue without log_id if logging fails
 
-        if user_id is not None:
-            # Insert log and get the inserted row ID in the same transaction
-            log_id = self.db.execute_and_get_id(
-                """
-                INSERT INTO prediction_logs (
-                    user_id, model_type, input_summary,
-                    prediction_result, probability, created_at
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    user_id,
-                    "brain_tumor_multiclass",
-                    input_summary,
-                    predicted_class,
-                    probability,
-                    self._now_iso(),
-                ),
-            )
+            # Build a user-friendly suggestion message
+            suggestion = self._generate_brain_suggestion(predicted_class, is_tumor, probability)
 
-        # Build a user-friendly suggestion message
-        suggestion = self._generate_brain_suggestion(predicted_class, is_tumor, probability)
-
-        return {
-            "predicted_class": predicted_class,
-            "probability": probability,
-            "probabilities": probabilities,
-            "is_tumor": is_tumor,
-            "input_summary": input_summary,
-            "suggestion": suggestion,
-            "log_id": log_id,
-        }
+            return {
+                "predicted_class": predicted_class,
+                "probability": probability,
+                "probabilities": probabilities,
+                "is_tumor": is_tumor,
+                "input_summary": input_summary,
+                "suggestion": suggestion,
+                "log_id": log_id,
+            }
+        except RuntimeError:
+            # Re-raise RuntimeErrors as-is (they have user-friendly messages)
+            raise
+        except Exception as e:
+            print(f"[ERROR] PredictionService.predict_brain_tumor: Unexpected error: {type(e).__name__}: {e}")
+            import traceback
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            raise RuntimeError("An unexpected error occurred during brain tumor prediction. Please try again.")
 
     def _generate_brain_suggestion(
         self,

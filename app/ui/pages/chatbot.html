@@ -156,6 +156,36 @@
             margin-top: 1rem;
         }
 
+        .flash {
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .flash-success {
+            background: #ecfdf3;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .flash-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .flash-type {
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .flash-msg {
+            flex: 1;
+        }
+
         @media (max-width: 640px) {
             .card {
                 padding: 1.1rem;
@@ -177,6 +207,19 @@
             medical diagnoses, prescriptions, or treatment plans. Always consult a qualified
             healthcare professional for real medical concerns.
         </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                        <span class="flash-type">
+                            {% if category == 'success' %}Success{% else %}Notice{% endif %}
+                        </span>
+                        <span class="flash-msg">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         <div class="chat-box">
             {% if user_message or assistant_reply %}

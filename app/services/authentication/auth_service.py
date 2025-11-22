@@ -8,6 +8,21 @@ class AuthService:  # Handles user registration, login, and password changes
     
     def register(self, username: str, email: str, password: str) -> Tuple[bool, str]: # Register a new user
         
+        # Basic validation
+        if not username or len(username.strip()) == 0:
+            return False, "Username cannot be empty."
+        
+        if not email or len(email.strip()) == 0:
+            return False, "Email cannot be empty."
+        
+        if not password or len(password) < 6:
+            return False, "Password must be at least 6 characters long."
+        
+        # Email format validation (basic check)
+        email = email.strip().lower()
+        if "@" not in email or "." not in email.split("@")[-1]:
+            return False, "Please enter a valid email address."
+        
         # Check if username already exists
         row = self.db.fetch_one(
             "SELECT * FROM users WHERE username = ?",

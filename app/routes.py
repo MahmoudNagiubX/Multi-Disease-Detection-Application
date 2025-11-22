@@ -52,16 +52,30 @@ def register():
             flash("All fields are required.", "error")
             return redirect(url_for("main.register"))
 
+        # Email format validation
+        if "@" not in email or "." not in email.split("@")[-1]:
+            flash("Please enter a valid email address.", "error")
+            return redirect(url_for("main.register"))
+
         if password != confirm_password:
             flash("Passwords do not match.", "error")
             return redirect(url_for("main.register"))
 
-        success, message = auth_service.register(username, email, password)
-        if success:
-            flash(message, "success")
-            return redirect(url_for("main.login"))
-        else:
-            flash(message, "error")
+        if len(password) < 6:
+            flash("Password must be at least 6 characters long.", "error")
+            return redirect(url_for("main.register"))
+
+        try:
+            success, message = auth_service.register(username, email, password)
+            if success:
+                flash(message, "success")
+                return redirect(url_for("main.login"))
+            else:
+                flash(message, "error")
+                return redirect(url_for("main.register"))
+        except Exception as e:
+            print(f"[ERROR] Register route: Unexpected error: {e}")
+            flash("Registration failed. Please try again later.", "error")
             return redirect(url_for("main.register"))
 
     # GET request
@@ -113,38 +127,59 @@ def heart_disease():
     
     result = None
     if request.method == "POST":
+        # Required fields for heart disease prediction
+        required_fields = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", 
+                          "thalach", "exang", "oldpeak", "slope", "ca", "thal"]
+        
+        # Validate all required fields are present and not empty
+        missing_fields = []
+        for field in required_fields:
+            value = request.form.get(field, "").strip()
+            if not value:
+                missing_fields.append(field)
+        
+        if missing_fields:
+            flash(f"Please fill in all required fields. Missing: {', '.join(missing_fields)}", "error")
+            return redirect(url_for("main.heart_disease"))
+        
+        # Validate numeric fields are valid numbers
+        numeric_fields = ["age", "trestbps", "chol", "thalach", "oldpeak", "ca"]
+        for field in numeric_fields:
+            try:
+                value = float(request.form.get(field, ""))
+                if value < 0:
+                    flash(f"{field} must be a non-negative number.", "error")
+                    return redirect(url_for("main.heart_disease"))
+            except ValueError:
+                flash(f"{field} must be a valid number.", "error")
+                return redirect(url_for("main.heart_disease"))
+        
+        # Validate ca is between 0 and 3
+        try:
+            ca_value = float(request.form.get("ca", ""))
+            if ca_value < 0 or ca_value > 3:
+                flash("Number of Major Vessels (ca) must be between 0 and 3.", "error")
+                return redirect(url_for("main.heart_disease"))
+        except ValueError:
+            pass  # Already caught above
+        
         user_id = session.get("user_id")
         form_data = request.form.to_dict()
-        result = prediction_service.predict_heart_disease(form_data, user_id)
-        flash("Heart prediction completed (not a real diagnosis).", "success")
+        
+        try:
+            result = prediction_service.predict_heart_disease(form_data, user_id)
+            flash("Heart prediction completed (not a real diagnosis).", "success")
+        except RuntimeError as e:
+            flash(str(e), "error")
+            return redirect(url_for("main.heart_disease"))
+        except Exception as e:
+            print(f"[ERROR] Heart disease route: Unexpected error: {type(e).__name__}: {e}")
+            import traceback
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            flash("Heart disease prediction failed. Please try again later.", "error")
+            return redirect(url_for("main.heart_disease"))
+    
     return render_template("heart_disease.html", result=result)
-
-    if request.method == "POST":
-        form_data = {
-            "age": request.form.get("age", ""),
-            "sex": request.form.get("sex", ""),
-            "cp": request.form.get("cp", ""),
-            "trestbps": request.form.get("trestbps", ""),
-            "chol": request.form.get("chol", ""),
-            "fbs": request.form.get("fbs", ""),
-            "restecg": request.form.get("restecg", ""),
-            "thalach": request.form.get("thalach", ""),
-            "exang": request.form.get("exang", ""),
-            "oldpeak": request.form.get("oldpeak", ""),
-            "slope": request.form.get("slope", ""),
-            "ca": request.form.get("ca", ""),
-            "thal": request.form.get("thal", ""),
-        }
-
-        user_id = session.get("user_id")
-        result = prediction_service.predict_heart_disease(form_data, user_id)
-
-        flash(
-            "Prediction completed (remember: this is not real medical advice).",
-            "success",
-        )
-
-    return render_template("heart_disease.html", result = result)
 
 @main_bp.route("/brain-tumor", methods = ["GET", "POST"])
 def brain_tumor():  # Brain tumor detection page
@@ -157,14 +192,25 @@ def brain_tumor():  # Brain tumor detection page
     if request.method == "POST":
         file = request.files.get("mri_image")
 
-        if not file or file.filename == "":
+        # Validate file was uploaded
+        if not file:
             flash("Please select an MRI image to upload.", "error")
+            return redirect(url_for("main.brain_tumor"))
+
+        # Validate filename is not empty
+        if file.filename == "" or not file.filename:
+            flash("Please select a valid image file.", "error")
             return redirect(url_for("main.brain_tumor"))
 
         # Secure the filename
         filename = secure_filename(file.filename)
+        if not filename:
+            flash("Invalid filename. Please select a valid image file.", "error")
+            return redirect(url_for("main.brain_tumor"))
+
         ext = Path(filename).suffix.lower()
 
+        # Validate file extension
         if ext not in ALLOWED_IMAGE_EXTENSIONS:
             flash(
                 "Unsupported file type. Please upload a PNG, JPG, JPEG, or BMP image.",
@@ -175,16 +221,18 @@ def brain_tumor():  # Brain tumor detection page
         # Full save path: instance/uploads/brain/<filename>
         save_path = BRAIN_UPLOAD_DIR / filename
 
+        # Save the file
         try:
             # Werkzeug expects a string path
             file.save(str(save_path))
         except Exception as e:
             print(f"[ERROR] Failed to save uploaded MRI: {e}")
-            flash("There was a problem saving the uploaded image.", "error")
+            flash("There was a problem saving the uploaded image. Please try again.", "error")
             return redirect(url_for("main.brain_tumor"))
 
         user_id = session.get("user_id")
 
+        # Run prediction
         try:
             # Pass string path to prediction service
             result = prediction_service.predict_brain_tumor(str(save_path), user_id)
@@ -193,28 +241,15 @@ def brain_tumor():  # Brain tumor detection page
                 "(educational only, not a real medical diagnosis).",
                 "success",
             )
-        except FileNotFoundError as e:
-            print(f"[ERROR] Brain tumor prediction failed - file not found: {e}")
-            flash(
-                f"Error: Image file not found. {str(e)}",
-                "error",
-            )
-            result = None
-        except ValueError as e:
-            print(f"[ERROR] Brain tumor prediction failed - image preprocessing error: {e}")
-            flash(
-                f"Error processing image: {str(e)}. Please ensure you're uploading a valid image file.",
-                "error",
-            )
+        except RuntimeError as e:
+            # RuntimeError messages are user-friendly
+            flash(str(e), "error")
             result = None
         except Exception as e:
             print(f"[ERROR] Brain tumor prediction failed: {type(e).__name__}: {e}")
             import traceback
             print(f"[ERROR] Traceback: {traceback.format_exc()}")
-            flash(
-                f"There was a problem running the brain tumor prediction: {str(e)}",
-                "error",
-            )
+            flash("Brain tumor prediction failed. Please try again later.", "error")
             result = None
 
     return render_template("brain_tumor.html", result = result)
@@ -252,7 +287,7 @@ def chatbot():  # AI Doctor Chatbot page
         except Exception as e:
             # Handle other unexpected errors
             error_msg = str(e)
-            flash(f"There was a problem contacting the AI doctor chatbot: {error_msg}", "error")
+            flash("There was a problem contacting the AI doctor chatbot. Please try again later.", "error")
             print(f"[ERROR] ChatbotService failed: {type(e).__name__}: {e}")
             import traceback
             print(f"[ERROR] Traceback: {traceback.format_exc()}")
@@ -339,36 +374,53 @@ def heart_report(log_id: int):
         flash("Please log in to access reports.", "error")
         return redirect(url_for("main.login"))
 
+    # Validate log_id
+    if not log_id or log_id <= 0:
+        flash("Invalid report ID.", "error")
+        return redirect(url_for("main.dashboard"))
+
     user_id = session.get("user_id")
 
-    # Get the prediction log and make sure it belongs to this user
-    log = report_service.get_prediction_for_user(
-        log_id,
-        user_id,
-        model_type="heart_disease",
-    )
-    if log is None:
-        flash("Heart prediction log not found.", "error")
+    try:
+        # Get the prediction log and make sure it belongs to this user
+        log = report_service.get_prediction_for_user(
+            log_id,
+            user_id,
+            model_type="heart_disease",
+        )
+        if log is None:
+            flash("Heart prediction log not found.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        # Load user object
+        row = db_manager.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+        if row is None:
+            flash("User not found.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        user = User.from_row(row)
+
+        # Generate PDF
+        try:
+            pdf_buffer = report_service.generate_heart_report(user, log)
+        except Exception as e:
+            print(f"[ERROR] Heart report PDF generation failed: {type(e).__name__}: {e}")
+            import traceback
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            flash("Could not generate PDF report. Please try again later.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        filename = f"heart_report_{log.get('id')}.pdf"
+        return send_file(
+            pdf_buffer,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=filename,
+        )
+    except Exception as e:
+        print(f"[ERROR] Heart report route: Unexpected error: {type(e).__name__}: {e}")
+        flash("An error occurred while generating the report. Please try again later.", "error")
         return redirect(url_for("main.dashboard"))
-
-    # Load user object
-    row = db_manager.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
-    if row is None:
-        flash("User not found.", "error")
-        return redirect(url_for("main.dashboard"))
-
-    user = User.from_row(row)
-
-    # Generate PDF
-    pdf_buffer = report_service.generate_heart_report(user, log)
-
-    filename = f"heart_report_{log.get('id')}.pdf"
-    return send_file(
-        pdf_buffer,
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=filename,
-    )
 
 @main_bp.route("/reports/brain/<int:log_id>")
 def brain_report(log_id: int):
@@ -379,36 +431,53 @@ def brain_report(log_id: int):
         flash("Please log in to access reports.", "error")
         return redirect(url_for("main.login"))
 
+    # Validate log_id
+    if not log_id or log_id <= 0:
+        flash("Invalid report ID.", "error")
+        return redirect(url_for("main.dashboard"))
+
     user_id = session.get("user_id")
 
-    # Get the prediction log and make sure it belongs to this user
-    log = report_service.get_prediction_for_user(
-        log_id,
-        user_id,
-        model_type="brain_tumor_multiclass",
-    )
-    if log is None:
-        flash("Brain prediction log not found.", "error")
+    try:
+        # Get the prediction log and make sure it belongs to this user
+        log = report_service.get_prediction_for_user(
+            log_id,
+            user_id,
+            model_type="brain_tumor_multiclass",
+        )
+        if log is None:
+            flash("Brain prediction log not found.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        # Load user object
+        row = db_manager.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+        if row is None:
+            flash("User not found.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        user = User.from_row(row)
+
+        # Generate PDF
+        try:
+            pdf_buffer = report_service.generate_brain_report(user, log)
+        except Exception as e:
+            print(f"[ERROR] Brain report PDF generation failed: {type(e).__name__}: {e}")
+            import traceback
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            flash("Could not generate PDF report. Please try again later.", "error")
+            return redirect(url_for("main.dashboard"))
+
+        filename = f"brain_report_{log.get('id')}.pdf"
+        return send_file(
+            pdf_buffer,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=filename,
+        )
+    except Exception as e:
+        print(f"[ERROR] Brain report route: Unexpected error: {type(e).__name__}: {e}")
+        flash("An error occurred while generating the report. Please try again later.", "error")
         return redirect(url_for("main.dashboard"))
-
-    # Load user object
-    row = db_manager.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
-    if row is None:
-        flash("User not found.", "error")
-        return redirect(url_for("main.dashboard"))
-
-    user = User.from_row(row)
-
-    # Generate PDF
-    pdf_buffer = report_service.generate_brain_report(user, log)
-
-    filename = f"brain_report_{log.get('id')}.pdf"
-    return send_file(
-        pdf_buffer,
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=filename,
-    )
     
 @main_bp.route("/logout")  # Log the user out by clearing the session
 def logout():
