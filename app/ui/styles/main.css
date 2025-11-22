@@ -1268,19 +1268,17 @@ input[type="file"]:hover {
   gap: var(--spacing-md);
 }
 
-.message {
+.chat-message-row {
   display: flex;
+  margin-bottom: 14px;
   animation: messageSlideIn 0.4s ease-out;
-  max-width: 85%;
 }
 
-.message.user {
-  align-self: flex-end;
+.chat-message-row.user {
   justify-content: flex-end;
 }
 
-.message.assistant {
-  align-self: flex-start;
+.chat-message-row.ai {
   justify-content: flex-start;
 }
 
@@ -1295,30 +1293,33 @@ input[type="file"]:hover {
   }
 }
 
-.message-bubble {
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-lg);
+.chat-message {
   word-wrap: break-word;
-  line-height: 1.6;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
   position: relative;
+  font-family: inherit;
 }
 
-.message.user .message-bubble {
-  background: linear-gradient(135deg, var(--color-blue) 0%, var(--color-blue-dark) 100%);
-  color: white;
-  border-bottom-right-radius: 6px;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+.chat-message-user {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #ffffff;
+  max-width: 380px;
+  padding: 10px 16px;
+  border-radius: 999px 999px 0 999px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
 }
 
-.message.assistant .message-bubble {
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-blue-light) 100%);
-  color: var(--color-text);
-  border: 2px solid var(--color-border);
-  border-bottom-left-radius: 6px;
-  border-left: 4px solid var(--color-brain);
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15);
+.chat-message-ai {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #0f172a;
+  max-width: 640px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f5f3ff, #eef2ff);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
 .empty-state {

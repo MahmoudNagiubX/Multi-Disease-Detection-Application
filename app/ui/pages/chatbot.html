@@ -66,16 +66,16 @@
             <div class="chat-box" id="chat-box">
                 {% if user_message or assistant_reply %}
                     {% if user_message %}
-                        <div class="message user">
-                            <div class="message-bubble">
+                        <div class="chat-message-row user">
+                            <div class="chat-message chat-message-user">
                                 {{ user_message }}
                             </div>
                         </div>
                     {% endif %}
 
                     {% if assistant_reply %}
-                        <div class="message assistant">
-                            <div class="message-bubble">
+                        <div class="chat-message-row ai">
+                            <div class="chat-message chat-message-ai">
                                 {{ assistant_reply|nl2br }}
                             </div>
                         </div>
