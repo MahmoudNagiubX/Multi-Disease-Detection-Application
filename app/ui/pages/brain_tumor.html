@@ -4,391 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brain Tumor MRI Analysis – Multi Disease Detection System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f5f8fc;
-            color: #0f172a;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #2563eb;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #64748b;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #2563eb;
-        }
-
-        .page-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-text {
-            font-size: 0.95rem;
-            color: #64748b;
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 1.5rem;
-        }
-
-        .upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            background: #f9fafb;
-            transition: border-color 0.2s, background 0.2s;
-        }
-
-        .upload-area:hover {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .file-input-wrapper {
-            margin-bottom: 1rem;
-        }
-
-        input[type="file"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: #ffffff;
-            cursor: pointer;
-        }
-
-        .file-hint {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-top: 0.5rem;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.05s;
-            margin-top: 1rem;
-        }
-
-        .btn:hover {
-            background: #1d4ed8;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: #64748b;
-        }
-
-        .btn-secondary:hover {
-            background: #475569;
-        }
-
-        .result-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .result-icon {
-            font-size: 3rem;
-        }
-
-        .result-item {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .class-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .class-tumor {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        .class-no-tumor {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .probabilities-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 0.5rem;
-        }
-
-        .probabilities-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .probabilities-list li:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-box {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        .suggestion-box p {
-            color: #1e40af;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .disclaimer {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-style: italic;
-            margin-top: 1rem;
-        }
-
-        .flash {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-
-        .flash-success {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .flash-error {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        .flash-type {
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .flash-msg {
-            flex: 1;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 2rem;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .upload-card-top {
-            margin-bottom: 2rem;
-        }
-
-        .uploaded-image-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .uploaded-image-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .image-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f9fafb;
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-            min-height: 700px;
-        }
-
-        .uploaded-image {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            min-height: 650px;
-            max-height: 900px;
-            border-radius: 10px;
-            object-fit: contain;
-            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
             <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('main.heart_disease') }}">Heart</a>
-                <a href="{{ url_for('main.chatbot') }}">Chatbot</a>
-                <a href="{{ url_for('main.settings') }}">Settings</a>
-                <a href="{{ url_for('main.logout') }}">Logout</a>
+                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('main.heart_disease') }}" class="nav-link">Heart</a>
+                <a href="{{ url_for('main.brain_tumor') }}" class="nav-link active">Brain</a>
+                <a href="{{ url_for('main.chatbot') }}" class="nav-link">Chatbot</a>
+                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="page-container">
         <div class="page-header">
-            <h1>🧠 Brain Tumor MRI Analysis</h1>
-            <div class="info-text">
+            <div class="brain-header">
+                <div class="brain-header-icon">🧠</div>
+                <h1>Brain Tumor MRI Analysis</h1>
+            </div>
+            <div class="info-box">
                 Upload a brain MRI image to let the CNN model classify into glioma, meningioma, 
                 pituitary tumor, or no tumor. Educational use only.
             </div>
@@ -417,13 +55,13 @@
                     </div>
                     <p class="file-hint">Supported formats: JPG, JPEG, PNG, BMP</p>
                 </div>
-                <button type="submit" class="btn">Analyze MRI</button>
+                <button type="submit" class="btn btn-brain btn-full">Analyze MRI</button>
             </form>
         </div>
 
         <!-- Results Grid: Image on Left, Prediction on Right -->
         {% if result %}
-        <div class="content-grid">
+        <div class="page-grid page-grid-2">
             <!-- MRI Image Preview - Left Side -->
             {% if result.image_url %}
             <div class="uploaded-image-card">
@@ -443,7 +81,7 @@
             {% endif %}
 
             <!-- Results Card - Right Side -->
-            <div class="result-card">
+            <div class="brain-result-card card">
                 <div class="result-header">
                     <div class="result-icon">🧠</div>
                     <h2>Analysis Result</h2>
@@ -484,7 +122,7 @@
                 </div>
 
                 {% if result and result.log_id is not none %}
-                <a href="{{ url_for('main.brain_report', log_id=result.log_id) }}" class="btn btn-secondary">
+                <a href="{{ url_for('main.brain_report', log_id=result.log_id) }}" class="btn btn-secondary btn-full">
                     📄 Download Brain MRI Report (PDF)
                 </a>
                 {% endif %}

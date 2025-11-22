@@ -1,7 +1,20 @@
 # App factory & basic config
 from flask import Flask
+from markupsafe import Markup, escape
 from .routes import main_bp
 from .core.managers.database_manager import db_manager
+
+def nl2br(value: str) -> Markup:
+    """
+    Convert newlines to <br> tags in a safe way.
+    First escapes HTML to prevent XSS, then replaces newlines with <br> tags.
+    """
+    if value is None:
+        return Markup("")
+    # First escape HTML to avoid injection, then replace newlines with <br>
+    escaped = escape(str(value))
+    return Markup(escaped.replace("\n", "<br>\n"))
+
 
 # Application factory function.
 def create_app():
@@ -15,6 +28,9 @@ def create_app():
     # Secret key (needed later for sessions, flash messages, etc.)
     # For now it's a hardcoded string; later you can load it from env/config.
     app.config["SECRET_KEY"] = "change_this_later_to_a_random_secret"
+
+    # Register custom Jinja filters
+    app.jinja_env.filters["nl2br"] = nl2br
 
     db_manager.init_db() # Initialize database
 

@@ -4,353 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heart Disease Risk Assessment – Multi Disease Detection System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f5f8fc;
-            color: #0f172a;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #2563eb;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #64748b;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #2563eb;
-        }
-
-        .page-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-text {
-            font-size: 0.95rem;
-            color: #64748b;
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 968px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-section {
-            margin-bottom: 2rem;
-        }
-
-        .form-section legend {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 1rem;
-            padding: 0 0.5rem;
-        }
-
-        .form-section fieldset {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            background: #f9fafb;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: #ffffff;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn {
-            padding: 0.75rem 2rem;
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.05s;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background: #1d4ed8;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: #64748b;
-            margin-top: 1rem;
-        }
-
-        .btn-secondary:hover {
-            background: #475569;
-        }
-
-        .result-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .result-icon {
-            font-size: 3rem;
-        }
-
-        .risk-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .risk-high {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        .risk-medium {
-            background: #fffbeb;
-            color: #b45309;
-            border: 1px solid #fde68a;
-        }
-
-        .risk-low {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .result-item {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .suggestion-box {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        .suggestion-box p {
-            color: #1e40af;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .disclaimer {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-style: italic;
-            margin-top: 1rem;
-        }
-
-        .flash {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-
-        .flash-success {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .flash-error {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        .flash-type {
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .flash-msg {
-            flex: 1;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 2rem;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
             <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('main.brain_tumor') }}">Brain</a>
-                <a href="{{ url_for('main.chatbot') }}">Chatbot</a>
-                <a href="{{ url_for('main.settings') }}">Settings</a>
-                <a href="{{ url_for('main.logout') }}">Logout</a>
+                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('main.heart_disease') }}" class="nav-link active">Heart</a>
+                <a href="{{ url_for('main.brain_tumor') }}" class="nav-link">Brain</a>
+                <a href="{{ url_for('main.chatbot') }}" class="nav-link">Chatbot</a>
+                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="page-container">
         <div class="page-header">
-            <h1>🫀 Heart Disease Risk Assessment</h1>
-            <div class="info-text">
+            <div class="heart-header">
+                <div class="heart-header-icon">🫀</div>
+                <h1>Heart Disease Risk Assessment</h1>
+            </div>
+            <div class="info-box">
                 Enter your clinical data to estimate heart disease risk. This is educational only, not a diagnosis.
             </div>
         </div>
@@ -368,120 +44,138 @@
             {% endif %}
         {% endwith %}
 
-        <div class="content-grid">
-            <!-- Input Form Card -->
-            <div class="card">
-                <h2>Clinical Data Entry</h2>
-                <form method="post" action="{{ url_for('main.heart_disease') }}">
+        <!-- Input Form Card - Full Width -->
+        <div class="card heart-form-card">
+            <div class="form-header">
+                <h2>📋 Clinical Data Entry</h2>
+                <p class="form-subtitle">Please enter all required clinical parameters for accurate risk assessment</p>
+            </div>
+            <form method="post" action="{{ url_for('main.heart_disease') }}" class="heart-form">
+                <div class="form-sections-grid">
                     <div class="form-section">
-                        <fieldset>
-                            <legend>Personal Information</legend>
+                        <div class="form-section-header">
+                            <span class="section-icon">👤</span>
+                            <h3 class="form-legend">Personal Information</h3>
+                        </div>
+                        <div class="form-fields">
                             <div class="form-group">
-                                <label for="age">Age (years)</label>
-                                <input type="number" id="age" name="age" min="0" required>
+                                <label for="age" class="form-label">Age (years)</label>
+                                <input type="number" id="age" name="age" class="form-input" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="sex">Sex</label>
-                                <select id="sex" name="sex" required>
+                                <label for="sex" class="form-label">Sex</label>
+                                <select id="sex" name="sex" class="form-select" required>
                                     <option value="1">Male</option>
                                     <option value="0">Female</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="cp">Chest Pain Type (cp)</label>
-                                <select id="cp" name="cp" required>
+                                <label for="cp" class="form-label">Chest Pain Type (cp)</label>
+                                <select id="cp" name="cp" class="form-select" required>
                                     <option value="0">0 – Typical angina</option>
                                     <option value="1">1 – Atypical angina</option>
                                     <option value="2">2 – Non-anginal pain</option>
                                     <option value="3">3 – Asymptomatic</option>
                                 </select>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
 
                     <div class="form-section">
-                        <fieldset>
-                            <legend>Blood Pressure & Cholesterol</legend>
+                        <div class="form-section-header">
+                            <span class="section-icon">🩺</span>
+                            <h3 class="form-legend">Blood Pressure & Cholesterol</h3>
+                        </div>
+                        <div class="form-fields">
                             <div class="form-group">
-                                <label for="trestbps">Resting Blood Pressure (mm Hg)</label>
-                                <input type="number" id="trestbps" name="trestbps" min="0" required>
+                                <label for="trestbps" class="form-label">Resting Blood Pressure (mm Hg)</label>
+                                <input type="number" id="trestbps" name="trestbps" class="form-input" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="chol">Cholesterol (mg/dL)</label>
-                                <input type="number" id="chol" name="chol" min="0" required>
+                                <label for="chol" class="form-label">Cholesterol (mg/dL)</label>
+                                <input type="number" id="chol" name="chol" class="form-input" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="fbs">Fasting Blood Sugar > 120 mg/dL</label>
-                                <select id="fbs" name="fbs" required>
+                                <label for="fbs" class="form-label">Fasting Blood Sugar > 120 mg/dL</label>
+                                <select id="fbs" name="fbs" class="form-select" required>
                                     <option value="0">No (≤ 120 mg/dL)</option>
                                     <option value="1">Yes (> 120 mg/dL)</option>
                                 </select>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
 
                     <div class="form-section">
-                        <fieldset>
-                            <legend>ECG & Exercise Data</legend>
+                        <div class="form-section-header">
+                            <span class="section-icon">💓</span>
+                            <h3 class="form-legend">ECG & Exercise Data</h3>
+                        </div>
+                        <div class="form-fields">
                             <div class="form-group">
-                                <label for="restecg">Resting ECG</label>
-                                <select id="restecg" name="restecg" required>
+                                <label for="restecg" class="form-label">Resting ECG</label>
+                                <select id="restecg" name="restecg" class="form-select" required>
                                     <option value="0">0 – Normal</option>
                                     <option value="1">1 – ST-T wave abnormality</option>
                                     <option value="2">2 – Left ventricular hypertrophy</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="thalach">Maximum Heart Rate Achieved</label>
-                                <input type="number" id="thalach" name="thalach" min="0" required>
+                                <label for="thalach" class="form-label">Maximum Heart Rate Achieved</label>
+                                <input type="number" id="thalach" name="thalach" class="form-input" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="exang">Exercise-induced Angina</label>
-                                <select id="exang" name="exang" required>
+                                <label for="exang" class="form-label">Exercise-induced Angina</label>
+                                <select id="exang" name="exang" class="form-select" required>
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="oldpeak">ST Depression Induced by Exercise</label>
-                                <input type="number" id="oldpeak" name="oldpeak" step="0.1" required>
+                                <label for="oldpeak" class="form-label">ST Depression Induced by Exercise</label>
+                                <input type="number" id="oldpeak" name="oldpeak" class="form-input" step="0.1" required>
                             </div>
                             <div class="form-group">
-                                <label for="slope">Slope of Peak Exercise ST Segment</label>
-                                <select id="slope" name="slope" required>
+                                <label for="slope" class="form-label">Slope of Peak Exercise ST Segment</label>
+                                <select id="slope" name="slope" class="form-select" required>
                                     <option value="0">0 – Upsloping</option>
                                     <option value="1">1 – Flat</option>
                                     <option value="2">2 – Downsloping</option>
                                 </select>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
 
                     <div class="form-section">
-                        <fieldset>
-                            <legend>Vessels & Thalassemia</legend>
+                        <div class="form-section-header">
+                            <span class="section-icon">🔬</span>
+                            <h3 class="form-legend">Vessels & Thalassemia</h3>
+                        </div>
+                        <div class="form-fields">
                             <div class="form-group">
-                                <label for="ca">Number of Major Vessels (0–3)</label>
-                                <input type="number" id="ca" name="ca" min="0" max="3" required>
+                                <label for="ca" class="form-label">Number of Major Vessels (0–3)</label>
+                                <input type="number" id="ca" name="ca" class="form-input" min="0" max="3" required>
                             </div>
                             <div class="form-group">
-                                <label for="thal">Thalassemia</label>
-                                <select id="thal" name="thal" required>
+                                <label for="thal" class="form-label">Thalassemia</label>
+                                <select id="thal" name="thal" class="form-select" required>
                                     <option value="1">1 – Normal</option>
                                     <option value="2">2 – Fixed defect</option>
                                     <option value="3">3 – Reversible defect</option>
                                 </select>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn">Predict Risk</button>
-                </form>
-            </div>
+                <div class="form-submit-wrapper">
+                    <button type="submit" class="btn btn-heart btn-full">🔍 Predict Risk</button>
+                </div>
+            </form>
+        </div>
 
-            <!-- Results Card -->
-            {% if result %}
-            <div class="result-card">
+        <!-- Results Card -->
+        {% if result %}
+        <div class="heart-result-card card" style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
                 <div class="result-header">
                     <div class="result-icon">🫀</div>
                     <h2>Prediction Result</h2>
@@ -521,8 +215,8 @@
                     This result is approximate and not a medical diagnosis. Always consult a qualified healthcare professional.
                 </p>
             </div>
-            {% endif %}
         </div>
+        {% endif %}
 
         <a href="{{ url_for('main.dashboard') }}" class="back-link">← Back to Dashboard</a>
     </div>
