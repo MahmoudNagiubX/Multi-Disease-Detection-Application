@@ -1,66 +1,270 @@
-<!-- Layout: dashboard_layout.html (extends base.html) -->
-<!-- CSS: main.css, components.css, dashboard.css -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – Multi Disease Detection System</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f8fc;
+            color: #0f172a;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s, transform 0.05s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
         .flash {
-            padding: 0.55rem 0.9rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            margin-bottom: 0.35rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 0.5rem;
         }
+
         .flash-success {
             background: #ecfdf3;
             color: #166534;
             border: 1px solid #bbf7d0;
         }
+
         .flash-error {
             background: #fef2f2;
             color: #b91c1c;
             border: 1px solid #fecaca;
         }
+
         .flash-type {
             font-weight: 600;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+
         .flash-msg {
             flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Hello, {{ username }}!</p>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
+            <div class="nav-links">
+                <a href="{{ url_for('main.heart_disease') }}">Heart</a>
+                <a href="{{ url_for('main.brain_tumor') }}">Brain</a>
+                <a href="{{ url_for('main.chatbot') }}">Chatbot</a>
+                <a href="{{ url_for('main.settings') }}">Settings</a>
+                <a href="{{ url_for('main.logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
-                    <span class="flash-type">
-                        {% if category == 'success' %}Success{% else %}Notice{% endif %}
-                    </span>
-                    <span class="flash-msg">{{ message }}</span>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="page-container">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <p class="welcome-text">Welcome, {{ username }}!</p>
+        </div>
 
-    <ul>
-        <li><a href="{{ url_for('main.heart_disease') }}">Heart Disease Detection</a></li>
-        <li><a href="{{ url_for('main.brain_tumor') }}">Brain Tumor Detection</a></li>
-        <li><a href="{{ url_for('main.chatbot') }}">Chatbot</a></li>
-        <li><a href="{{ url_for('main.settings') }}">Settings</a></li>
-    </ul>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                        <span class="flash-type">
+                            {% if category == 'success' %}Success{% else %}Notice{% endif %}
+                        </span>
+                        <span class="flash-msg">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <p><a href="{{ url_for('main.logout') }}">Logout</a></p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🫀</div>
+                <h3>Heart Disease Detection</h3>
+                <p>
+                    Assess your heart disease risk using advanced machine learning models 
+                    based on clinical data.
+                </p>
+                <a href="{{ url_for('main.heart_disease') }}" class="btn">Start Assessment</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Brain Tumor Detection</h3>
+                <p>
+                    Upload brain MRI images for AI-powered classification and analysis 
+                    using deep learning.
+                </p>
+                <a href="{{ url_for('main.brain_tumor') }}" class="btn">Analyze MRI</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>AI Doctor Chatbot</h3>
+                <p>
+                    Get educational medical guidance and symptom analysis with our 
+                    AI-powered assistant.
+                </p>
+                <a href="{{ url_for('main.chatbot') }}" class="btn">Open Chatbot</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3>Settings</h3>
+                <p>
+                    Manage your account, change password, view history, and update 
+                    your preferences.
+                </p>
+                <a href="{{ url_for('main.settings') }}" class="btn">Go to Settings</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

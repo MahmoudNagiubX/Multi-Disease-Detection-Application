@@ -1,18 +1,62 @@
-<!-- Uses dashboard_layout.html (extends base.html) -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>AI Doctor Chatbot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Doctor Assistant – Multi Disease Detection System</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: #f5f8fc;
-            color: #1f2933;
+            color: #0f172a;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
         }
 
         .page-container {
@@ -23,20 +67,22 @@
 
         .card {
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
         }
 
         h1 {
             margin: 0 0 0.5rem;
-            font-size: 1.6rem;
+            font-size: 1.75rem;
+            font-weight: 700;
             color: #0f172a;
         }
 
         .subtitle {
             font-size: 0.95rem;
-            color: #6b7280;
+            color: #64748b;
             margin-bottom: 1.5rem;
         }
 
@@ -47,143 +93,8 @@
             border-radius: 8px;
             font-size: 0.85rem;
             color: #1d4ed8;
-            margin-bottom: 1.25rem;
-        }
-
-        .chat-box {
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-            background: #f9fafb;
-            padding: 1rem;
-            max-height: 420px;
-            overflow-y: auto;
-            margin-bottom: 1rem;
-        }
-
-        .message {
-            margin-bottom: 0.9rem;
-            max-width: 90%;
-            line-height: 1.5;
-            font-size: 0.95rem;
-        }
-
-        .message.user {
-            margin-left: auto;
-            text-align: right;
-        }
-
-        .message-bubble {
-            display: inline-block;
-            padding: 0.6rem 0.8rem;
-            border-radius: 999px;
-        }
-
-        .message.user .message-bubble {
-            background: #2563eb;
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant .message-bubble {
-            background: #e5f2ff;
-            color: #111827;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message-label {
-            font-size: 0.75rem;
-            margin-bottom: 0.15rem;
-            color: #6b7280;
-        }
-
-        form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-            margin-top: 0.5rem;
-        }
-
-        textarea {
-            flex: 1;
-            min-height: 60px;
-            max-height: 120px;
-            resize: vertical;
-            padding: 0.6rem 0.75rem;
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-        }
-
-        textarea:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-            background: #ffffff;
-        }
-
-        button {
-            padding: 0.6rem 1rem;
-            border-radius: 999px;
-            border: none;
-            background: #2563eb;
-            color: #ffffff;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: background 0.15s ease, transform 0.05s ease;
-            white-space: nowrap;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .hint {
-            margin-top: 0.75rem;
-            font-size: 0.85rem;
-            color: #9ca3af;
-        }
-
-        .empty-state {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #9ca3af;
-            margin-top: 1rem;
-        }
-
-        .flash {
-            padding: 0.55rem 0.9rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            margin-bottom: 0.35rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-        .flash-success {
-            background: #ecfdf3;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-        .flash-error {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-        .flash-type {
-            font-weight: 600;
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-        .flash-msg {
-            flex: 1;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
 
         .mode-switch {
@@ -191,12 +102,12 @@
             gap: 0.5rem;
             margin-bottom: 1.25rem;
             border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.75rem;
         }
 
         .mode-button {
             flex: 1;
-            padding: 0.6rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 8px;
             border: 2px solid #e5e7eb;
             background: #f9fafb;
@@ -205,9 +116,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.15s ease;
-            text-decoration: none;
             text-align: center;
-            display: inline-block;
         }
 
         .mode-button:hover {
@@ -223,132 +132,353 @@
 
         .mode-description {
             font-size: 0.85rem;
-            color: #6b7280;
-            margin-top: 0.5rem;
+            color: #64748b;
+            margin-bottom: 1.25rem;
             padding: 0.75rem;
             background: #f9fafb;
             border-radius: 8px;
             border-left: 3px solid #3b82f6;
+            line-height: 1.6;
+        }
+
+        .chat-box {
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            min-height: 200px;
+        }
+
+        .message {
+            margin-bottom: 1.25rem;
+            max-width: 85%;
+            line-height: 1.6;
+        }
+
+        .message.user {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: #2563eb;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
         }
 
         .message.assistant .message-bubble {
+            background: #e5f2ff;
+            color: #111827;
+            border-bottom-left-radius: 4px;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
 
+        .message-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            padding: 2rem;
+        }
+
+        form {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 80px;
+            max-height: 150px;
+            resize: vertical;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: #ffffff;
+        }
+
+        button[type="submit"] {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.15s ease, transform 0.05s ease;
+            white-space: nowrap;
+        }
+
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        .hint {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .flash {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .flash-success {
+            background: #ecfdf3;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .flash-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .flash-type {
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .flash-msg {
+            flex: 1;
+        }
+
         @media (max-width: 640px) {
             .card {
-                padding: 1.1rem;
+                padding: 1.25rem;
+            }
+
+            .mode-switch {
+                flex-direction: column;
+            }
+
+            form {
+                flex-direction: column;
+            }
+
+            button[type="submit"] {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-<div class="page-container">
-    <div class="card">
-        <h1>AI Doctor Chatbot</h1>
-        <p class="subtitle">
-            Ask questions about your heart risk, brain MRI result, and general medical topics.
-        </p>
-
-        <div class="disclaimer">
-            <strong>Important:</strong>
-            This chatbot is for <strong>educational purposes only</strong>. It does not provide
-            medical diagnoses, prescriptions, or treatment plans. Always consult a qualified
-            healthcare professional for real medical concerns.
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
+            <div class="nav-links">
+                <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('main.heart_disease') }}">Heart</a>
+                <a href="{{ url_for('main.brain_tumor') }}">Brain</a>
+                <a href="{{ url_for('main.settings') }}">Settings</a>
+                <a href="{{ url_for('main.logout') }}">Logout</a>
+            </div>
         </div>
+    </nav>
 
-        <!-- Mode Switch -->
-        <div class="mode-switch">
-            <a href="{{ url_for('main.chatbot', mode='chat') }}" 
-               class="mode-button {% if mode == 'chat' or not mode %}active{% endif %}">
-                💬 Chat Mode
-            </a>
-            <a href="{{ url_for('main.chatbot', mode='symptoms') }}" 
-               class="mode-button {% if mode == 'symptoms' %}active{% endif %}">
-                🔍 Symptom Checker
-            </a>
-        </div>
+    <div class="page-container">
+        <div class="card">
+            <h1>💬 AI Doctor Assistant</h1>
+            <p class="subtitle">
+                Get educational medical guidance with our AI-powered assistant. 
+                Choose between general chat or structured symptom analysis.
+            </p>
 
-        {% if mode == 'symptoms' %}
-        <div class="mode-description">
-            <strong>Symptom Checker Mode:</strong> Describe your symptoms in detail, and I'll provide 
-            a structured medical analysis including possible causes, when to see a doctor, lifestyle tips, 
-            and how your latest heart/brain AI results might relate. This analysis uses your latest 
-            prediction results as context.
-        </div>
-        {% else %}
-        <div class="mode-description">
-            <strong>Chat Mode:</strong> Ask questions about your heart risk, brain MRI results, and general 
-            medical topics. The chatbot automatically uses your latest prediction results as context.
-        </div>
-        {% endif %}
+            <div class="disclaimer">
+                <strong>Important:</strong> This chatbot is for <strong>educational purposes only</strong>. 
+                It does not provide medical diagnoses, prescriptions, or treatment plans. 
+                Always consult a qualified healthcare professional for real medical concerns.
+            </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
-                        <span class="flash-type">
-                            {% if category == 'success' %}Success{% else %}Notice{% endif %}
-                        </span>
-                        <span class="flash-msg">{{ message }}</span>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+            <!-- Mode Switch -->
+            <div class="mode-switch">
+                <button type="button" class="mode-button {% if mode == 'chat' or not mode %}active{% endif %}" 
+                        onclick="switchMode('chat')" id="btn-chat">
+                    💬 General Chat
+                </button>
+                <button type="button" class="mode-button {% if mode == 'symptoms' %}active{% endif %}" 
+                        onclick="switchMode('symptoms')" id="btn-symptoms">
+                    🔍 Symptom Checker
+                </button>
+            </div>
 
-        <div class="chat-box">
-            {% if user_message or assistant_reply %}
-                {% if user_message %}
-                    <div class="message user">
-                        <div class="message-label">You</div>
-                        <div class="message-bubble">
-                            {{ user_message }}
-                        </div>
-                    </div>
+            <div class="mode-description" id="mode-description">
+                {% if mode == 'symptoms' %}
+                <strong>Symptom Checker Mode:</strong> Describe your symptoms in detail, and I'll provide 
+                a structured medical analysis including possible causes, when to see a doctor, lifestyle tips, 
+                and how your latest heart/brain AI results might relate. This analysis uses your latest 
+                prediction results as context.
+                {% else %}
+                <strong>Chat Mode:</strong> Ask questions about your heart risk, brain MRI results, and general 
+                medical topics. The chatbot automatically uses your latest prediction results as context.
                 {% endif %}
+            </div>
 
-                {% if assistant_reply %}
-                    <div class="message assistant">
-                        <div class="message-label">AI Doctor (Educational)</div>
-                        <div class="message-bubble">
-                            {{ assistant_reply }}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                            <span class="flash-type">
+                                {% if category == 'success' %}Success{% else %}Notice{% endif %}
+                            </span>
+                            <span class="flash-msg">{{ message }}</span>
                         </div>
-                    </div>
+                    {% endfor %}
                 {% endif %}
-            {% else %}
-                <div class="empty-state">
-                    {% if mode == 'symptoms' %}
-                        No symptoms analyzed yet. Describe your symptoms in detail to get a structured medical analysis.
-                    {% else %}
-                        No messages yet. Ask your first question about your latest heart or brain results.
+            {% endwith %}
+
+            <div class="chat-box" id="chat-box">
+                {% if user_message or assistant_reply %}
+                    {% if user_message %}
+                        <div class="message user">
+                            <div class="message-label">You</div>
+                            <div class="message-bubble">
+                                {{ user_message }}
+                            </div>
+                        </div>
                     {% endif %}
-                </div>
-            {% endif %}
-        </div>
 
-        <form method="post" action="{{ url_for('main.chatbot', mode=mode) }}" id="chatbot-form">
-            <input type="hidden" name="mode" value="{{ mode }}">
-            <textarea
-                name="message"
-                id="message-input"
-                placeholder="{% if mode == 'symptoms' %}Example: I have been experiencing chest pain, shortness of breath, and dizziness for the past 3 days. The pain gets worse with physical activity.{% else %}Example: Based on my last heart and brain checks, should I be worried about my health?{% endif %}"
-                required
-            ></textarea>
+                    {% if assistant_reply %}
+                        <div class="message assistant">
+                            <div class="message-label">AI Doctor (Educational)</div>
+                            <div class="message-bubble">
+                                {{ assistant_reply }}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state" id="empty-state">
+                        {% if mode == 'symptoms' %}
+                            No symptoms analyzed yet. Describe your symptoms in detail to get a structured medical analysis.
+                        {% else %}
+                            No messages yet. Ask your first question about your latest heart or brain results.
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
 
-            <button type="submit">{% if mode == 'symptoms' %}Analyze Symptoms{% else %}Send{% endif %}</button>
-        </form>
+            <form method="post" action="{{ url_for('main.chatbot', mode=mode) }}" id="chatbot-form">
+                <input type="hidden" name="mode" id="mode-input" value="{{ mode or 'chat' }}">
+                <textarea
+                    name="message"
+                    id="message-input"
+                    placeholder="{% if mode == 'symptoms' %}Example: I have been experiencing chest pain, shortness of breath, and dizziness for the past 3 days. The pain gets worse with physical activity.{% else %}Example: Based on my last heart and brain checks, should I be worried about my health?{% endif %}"
+                    required
+                ></textarea>
 
-        <div class="hint">
-            {% if mode == 'symptoms' %}
-                The symptom checker automatically uses your latest heart-disease and brain-tumor model results
-                as context for the analysis. Provide detailed symptom descriptions for better results.
-            {% else %}
-                The chatbot automatically uses your latest heart-disease and brain-tumor model results
-                in the background (if available), so you don't need to re-enter your values.
-            {% endif %}
+                <button type="submit" id="submit-btn">{% if mode == 'symptoms' %}Analyze Symptoms{% else %}Send{% endif %}</button>
+            </form>
+
+            <div class="hint" id="hint-text">
+                {% if mode == 'symptoms' %}
+                    The symptom checker automatically uses your latest heart-disease and brain-tumor model results
+                    as context for the analysis. Provide detailed symptom descriptions for better results.
+                {% else %}
+                    The chatbot automatically uses your latest heart-disease and brain-tumor model results
+                    in the background (if available), so you don't need to re-enter your values.
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        function switchMode(newMode) {
+            // Update active button
+            document.getElementById('btn-chat').classList.remove('active');
+            document.getElementById('btn-symptoms').classList.remove('active');
+            
+            if (newMode === 'chat') {
+                document.getElementById('btn-chat').classList.add('active');
+            } else {
+                document.getElementById('btn-symptoms').classList.add('active');
+            }
+
+            // Update hidden input
+            document.getElementById('mode-input').value = newMode;
+
+            // Update form action
+            const form = document.getElementById('chatbot-form');
+            const currentUrl = form.action.split('?')[0];
+            form.action = currentUrl + '?mode=' + newMode;
+
+            // Update placeholder
+            const textarea = document.getElementById('message-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const hintText = document.getElementById('hint-text');
+            const modeDesc = document.getElementById('mode-description');
+
+            if (newMode === 'symptoms') {
+                textarea.placeholder = 'Example: I have been experiencing chest pain, shortness of breath, and dizziness for the past 3 days. The pain gets worse with physical activity.';
+                submitBtn.textContent = 'Analyze Symptoms';
+                hintText.textContent = 'The symptom checker automatically uses your latest heart-disease and brain-tumor model results as context for the analysis. Provide detailed symptom descriptions for better results.';
+                modeDesc.innerHTML = '<strong>Symptom Checker Mode:</strong> Describe your symptoms in detail, and I\'ll provide a structured medical analysis including possible causes, when to see a doctor, lifestyle tips, and how your latest heart/brain AI results might relate. This analysis uses your latest prediction results as context.';
+            } else {
+                textarea.placeholder = 'Example: Based on my last heart and brain checks, should I be worried about my health?';
+                submitBtn.textContent = 'Send';
+                hintText.textContent = 'The chatbot automatically uses your latest heart-disease and brain-tumor model results in the background (if available), so you don\'t need to re-enter your values.';
+                modeDesc.innerHTML = '<strong>Chat Mode:</strong> Ask questions about your heart risk, brain MRI results, and general medical topics. The chatbot automatically uses your latest prediction results as context.';
+            }
+
+            // Update empty state if no messages
+            const emptyState = document.getElementById('empty-state');
+            if (emptyState) {
+                if (newMode === 'symptoms') {
+                    emptyState.textContent = 'No symptoms analyzed yet. Describe your symptoms in detail to get a structured medical analysis.';
+                } else {
+                    emptyState.textContent = 'No messages yet. Ask your first question about your latest heart or brain results.';
+                }
+            }
+        }
+
+        // Auto-scroll chat box to bottom
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
 </body>
 </html>

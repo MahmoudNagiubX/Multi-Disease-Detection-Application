@@ -6,7 +6,7 @@ from app.services.report.report_service import report_service
 from app.core.managers.database_manager import db_manager
 from werkzeug.utils import secure_filename
 from app.models.user.user import User
-from flask import send_file
+from flask import send_file, send_from_directory
 from pathlib import Path
 import os
 from flask import (
@@ -25,8 +25,12 @@ main_bp = Blueprint("main", __name__)
 # -------------------------------------------------------------------
 # Upload configuration for brain MRI images
 # -------------------------------------------------------------------
-# Upload directory: instance/uploads/brain  (relative to project root)
-BRAIN_UPLOAD_DIR = Path("instance") / "uploads" / "brain"
+# Upload directory: app/ui/uploads/brain
+# Flask static_folder is set to "ui", so url_for("static", filename="uploads/brain/...")
+# will look for files in app/ui/uploads/brain/
+# routes.py is in app/, so Path(__file__).parent is app/
+BASE_DIR = Path(__file__).parent  # app/
+BRAIN_UPLOAD_DIR = BASE_DIR / "ui" / "uploads" / "brain"
 BRAIN_UPLOAD_DIR.mkdir(parents = True, exist_ok = True)
 
 # Allowed MRI image extensions
@@ -181,6 +185,8 @@ def heart_disease():
     
     return render_template("heart_disease.html", result=result)
 
+# Removed custom route - now using static folder with url_for("static", ...)
+
 @main_bp.route("/brain-tumor", methods = ["GET", "POST"])
 def brain_tumor():  # Brain tumor detection page
     if "user_id" not in session:
@@ -218,17 +224,23 @@ def brain_tumor():  # Brain tumor detection page
             )
             return redirect(url_for("main.brain_tumor"))
 
-        # Full save path: instance/uploads/brain/<filename>
-        save_path = BRAIN_UPLOAD_DIR / filename
+        # Full save path: app/ui/uploads/brain/<filename>
+        # Flask static_folder is "ui", so url_for("static", filename="uploads/brain/...") 
+        # looks for files in app/ui/uploads/brain/
+        # Use os.path.join to ensure proper path handling on all platforms
+        save_path = os.path.join(str(BRAIN_UPLOAD_DIR), filename)
 
         # Save the file
         try:
-            # Werkzeug expects a string path
-            file.save(str(save_path))
+            file.save(save_path)
         except Exception as e:
             print(f"[ERROR] Failed to save uploaded MRI: {e}")
             flash("There was a problem saving the uploaded image. Please try again.", "error")
             return redirect(url_for("main.brain_tumor"))
+
+        # Build the public URL for the uploaded image using static folder
+        # Use forward slashes for URL (works on all platforms)
+        image_url = url_for("static", filename=f"uploads/brain/{filename}")
 
         user_id = session.get("user_id")
 
@@ -236,6 +248,9 @@ def brain_tumor():  # Brain tumor detection page
         try:
             # Pass string path to prediction service
             result = prediction_service.predict_brain_tumor(str(save_path), user_id)
+            # Add image URL to result for template display
+            if result:
+                result["image_url"] = image_url
             flash(
                 "Brain tumor prediction completed "
                 "(educational only, not a real medical diagnosis).",
