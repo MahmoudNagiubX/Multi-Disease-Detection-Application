@@ -6,8 +6,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import load_img, img_to_array   # type: ignore
 
+from app.models.base_model import BaseDiseaseModel
 
-class BrainTumorModel:  # Wrapper around the trained 4-class CNN for brain tumor detection
+
+class BrainTumorModel(BaseDiseaseModel):  # Wrapper around the trained 4-class CNN for brain tumor detection
 
     def __init__(
         self,
@@ -21,11 +23,15 @@ class BrainTumorModel:  # Wrapper around the trained 4-class CNN for brain tumor
         if model_path is None:
             model_path = app_dir / "data" / "saved_models" / "brain_tumor_cnn_multiclass.h5"
 
-        # 🔹 IMPORTANT: always convert to Path, even if a string was passed
-        self.model_path: Path = Path(model_path)
+        # Initialize common base attributes (_model_path, _loaded_model)
+        super().__init__(model_path)
+
+        # Keep original public attribute for backward compatibility
+        self.model_path: Path = self._model_path
 
         self.img_size: tuple[int, int] = img_size
 
+        # Keras model instance used internally by this subclass
         self._model: keras.Model | None = None
 
         # Make sure this matches class_names from training
@@ -49,6 +55,10 @@ class BrainTumorModel:  # Wrapper around the trained 4-class CNN for brain tumor
 
         self._model = keras.models.load_model(self.model_path)  # Load the trained CNN
         print(f"[BrainTumorModel] Loaded model from: {self.model_path}")
+
+    def load_model(self) -> None:
+        """Concrete implementation of the abstract load_model interface."""
+        self._ensure_model_loaded()
 
     def _preprocess_image(self, image_path: str | Path) -> np.ndarray:
         """

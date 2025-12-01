@@ -1,13 +1,19 @@
 from __future__ import annotations
 from typing import Optional, Tuple, Dict, Any
-from app.core.managers.database_manager import db_manager
+from app.core.managers.database_manager import db_manager, DatabaseManager
 from app.models.user.user import User 
+from app.services.base_service import BaseService
 
 
-class UserSettingsService: 
+class UserSettingsService(BaseService): 
     #Handles:(Fetch basic profile/Change password/Clear prediction history/Delete account)
+    def __init__(self, db: DatabaseManager = db_manager) -> None:
+        super().__init__(db)
+        # Provide a public alias consistent with other services if needed
+        self.db = self._db
+
     def _fetch_user_instance(self, user_id: int) -> Optional[User]:
-        row = db_manager.fetch_one(
+        row = self.db.fetch_one(
             """
             SELECT id, username, email, password_hash,
                    created_at, updated_at,
@@ -63,7 +69,7 @@ class UserSettingsService:
         user.set_password(new_password)
 
         # Save updated hash
-        db_manager.execute(
+        self.db.execute(
             "UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?",
             (user.password_hash, User.now_iso(), user_id),
         )
@@ -71,14 +77,14 @@ class UserSettingsService:
         return True, "Password updated successfully."
 
     def clear_prediction_history(self, user_id: int) -> Tuple[bool, str]:
-        db_manager.execute(
+        self.db.execute(
             "DELETE FROM prediction_logs WHERE user_id = ?",
             (user_id,),
         )
         return True, "Prediction history cleared."
 
     def delete_account(self, user_id: int) -> Tuple[bool, str]:
-        db_manager.execute(
+        self.db.execute(
             "DELETE FROM users WHERE id = ?",
             (user_id,),
         )

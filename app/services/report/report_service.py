@@ -5,11 +5,12 @@ from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
-from app.core.managers.database_manager import db_manager
+from app.core.managers.database_manager import db_manager, DatabaseManager
 from app.models.user.user import User
+from app.services.base_service import BaseService
 
 
-class ReportService:
+class ReportService(BaseService):
     """
     Handles creation of PDF reports for predictions.
     - Fetches prediction_log rows for a given user
@@ -17,6 +18,11 @@ class ReportService:
     - Generates PDF reports for brain tumor predictions
     """
     
+    def __init__(self, db: DatabaseManager = db_manager) -> None:
+        super().__init__(db)
+        # Optional public alias for consistency
+        self.db = self._db
+
     def _row_to_log_dict(self, row) -> Dict[str, Any]:
         """
         Convert a DB row into a plain dict.
@@ -61,7 +67,7 @@ class ReportService:
             query += " AND model_type = ?"
             params.append(model_type)
 
-        row = db_manager.fetch_one(query, tuple(params))
+        row = self.db.fetch_one(query, tuple(params))
         if row is None:
             return None
 

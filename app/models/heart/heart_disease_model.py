@@ -2,23 +2,30 @@ from typing import Dict, Tuple, Any, List
 from pathlib import Path
 import numpy as np
 import joblib
+from app.models.base_model import BaseDiseaseModel
 
-class HeartDiseaseModel:    # Wrapper for the Heart Disease prediction model
+class HeartDiseaseModel(BaseDiseaseModel):    # Wrapper for the Heart Disease prediction model
     def __init__(self, model_path: str | None = None) -> None:
-        
+        # Preserve existing default path behavior
         if model_path is None:
-            self.model_path = "app/data/saved_models/heart_model.pkl"
+            resolved_path = "app/data/saved_models/heart_model.pkl"
         else:
-            self.model_path = model_path
+            resolved_path = model_path
 
-        self.loaded_model: Any = None
+        # Initialize common base attributes (_model_path, _loaded_model)
+        super().__init__(resolved_path)
+
+        # Keep original public attributes for backward compatibility
+        self.model_path: str = str(self._model_path)
+        self.loaded_model: Any | None = self._loaded_model
+
         self.feature_names: List[str] = []
 
     def load_model(self) -> None:   # Load the RandomForest model + feature names
-        if self.loaded_model is not None:
+        if self._loaded_model is not None:
             return  # already loaded
 
-        bundle_path = Path(self.model_path)
+        bundle_path = Path(self._model_path)
         if not bundle_path.exists():
             raise FileNotFoundError(
                 f"Heart model file not found at: {self.model_path}. "
@@ -26,7 +33,9 @@ class HeartDiseaseModel:    # Wrapper for the Heart Disease prediction model
             )
 
         bundle = joblib.load(bundle_path)
-        self.loaded_model = bundle["model"]
+        self._loaded_model = bundle["model"]
+        # Keep public alias in sync for any external code that might use it
+        self.loaded_model = self._loaded_model
         self.feature_names = bundle["feature_names"]
 
         if not self.feature_names:
@@ -48,7 +57,8 @@ class HeartDiseaseModel:    # Wrapper for the Heart Disease prediction model
         X = np.array([row_values], dtype=float)
 
         # Predict probability of each class
-        proba = self.loaded_model.predict_proba(X)[0]  # shape: (n_classes)
+        assert self._loaded_model is not None
+        proba = self._loaded_model.predict_proba(X)[0]  # shape: (n_classes)
 
         # We assume class "1" = has disease; figure out which index that is
         classes = list(self.loaded_model.classes_)
