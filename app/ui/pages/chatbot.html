@@ -3,123 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Doctor Assistant – Multi Disease Detection System</title>
+    <title>AI Doctor Assistant - MDDS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('mdds-theme') || 
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
-            <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('main.heart_disease') }}" class="nav-link">Heart</a>
-                <a href="{{ url_for('main.brain_tumor') }}" class="nav-link">Brain</a>
-                <a href="{{ url_for('main.chatbot') }}" class="nav-link active">Chatbot</a>
-                <a href="{{ url_for('main.settings') }}" class="nav-settings" title="Settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </a>
-                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
-            </div>
+<body class="layout-dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('main.dashboard') }}" class="sidebar-brand">
+                <div style="width: 32px; height: 32px; background: var(--color-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                </div>
+                <span>MDDS</span>
+            </a>
         </div>
-    </nav>
-
-    <div class="chatbot-container page-container">
-        <div class="chatbot-header">
-            <div class="chatbot-header-icon">💬</div>
-            <div>
-                <h1>AI Doctor Assistant</h1>
-                <p class="chatbot-subtitle">Get instant medical guidance powered by AI</p>
+        
+        <nav class="sidebar-nav">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Menu</div>
+            
+            <a href="{{ url_for('main.dashboard') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </a>
+            
+            <a href="{{ url_for('main.heart_disease') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                Heart Disease
+            </a>
+            
+            <a href="{{ url_for('main.brain_tumor') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>
+                Brain MRI
+            </a>
+            
+            <a href="{{ url_for('main.chatbot') }}" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                AI Assistant
+            </a>
+            
+            <div style="flex: 1;"></div>
+            
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Settings</div>
+            
+            <div style="padding: 0 1rem; margin-bottom: 1rem;">
+                <div class="pill-toggle" id="themeToggle">
+                    <div class="pill-option active" data-theme="light">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </div>
+                    <div class="pill-option" data-theme="dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </div>
+                </div>
             </div>
+            
+            <a href="{{ url_for('main.settings') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </a>
+            
+            <a href="{{ url_for('main.logout') }}" class="nav-item" style="color: var(--color-error);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" style="height: 100vh; display: flex; flex-direction: column; padding: 0;">
+        <!-- Mobile Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0;">
+            <button class="menu-toggle" id="menuToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            
+            <div style="font-weight: 600; color: var(--color-text);">AI Doctor Assistant</div>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-container">
-                    {% for category, message in messages %}
-                        <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
-                            <span class="flash-type">
-                                {% if category == 'success' %}Success{% else %}Notice{% endif %}
-                            </span>
-                            <span class="flash-msg">{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" style="display:none;">{{ message }}</div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <div class="chatbot-card">
-            <!-- Mode Switch -->
-            <div class="mode-toggle">
-                <button type="button" class="mode-toggle-btn {% if mode == 'chat' or not mode %}active{% endif %}" 
-                        onclick="switchMode('chat')" id="btn-chat">
-                    💬 Chat
-                </button>
-                <button type="button" class="mode-toggle-btn {% if mode == 'symptoms' %}active{% endif %}" 
-                        onclick="switchMode('symptoms')" id="btn-symptoms">
-                    🔍 Symptoms
-                </button>
+        <div style="flex: 1; display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; padding: 1rem;">
+            <!-- Mode Toggle -->
+            <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                <div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.25rem; border-radius: 9999px; display: flex; gap: 0.25rem;">
+                    <button type="button" onclick="switchMode('chat')" id="btn-chat" class="btn {% if mode == 'chat' or not mode %}btn-primary{% endif %}" style="border-radius: 9999px; padding: 0.5rem 1.5rem; {% if mode != 'chat' and mode %}background: transparent; color: var(--color-text-light); border: none;{% endif %}">
+                        💬 General Chat
+                    </button>
+                    <button type="button" onclick="switchMode('symptoms')" id="btn-symptoms" class="btn {% if mode == 'symptoms' %}btn-primary{% endif %}" style="border-radius: 9999px; padding: 0.5rem 1.5rem; {% if mode != 'symptoms' %}background: transparent; color: var(--color-text-light); border: none;{% endif %}">
+                        🔍 Symptom Check
+                    </button>
+                </div>
             </div>
 
-            <div class="chat-box" id="chat-box">
-                {% if user_message or assistant_reply %}
-                    {% if user_message %}
-                        <div class="chat-message-row user">
-                            <div class="chat-message chat-message-user">
-                                {{ user_message }}
+            <!-- Chat Area -->
+            <div class="card" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden; margin-bottom: 1rem;">
+                <div id="chat-box" style="flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                    {% if user_message or assistant_reply %}
+                        {% if user_message %}
+                            <div style="align-self: flex-end; max-width: 80%;">
+                                <div style="background: var(--color-primary); color: white; padding: 0.75rem 1rem; border-radius: 1rem 1rem 0 1rem;">
+                                    {{ user_message }}
+                                </div>
                             </div>
+                        {% endif %}
+
+                        {% if assistant_reply %}
+                            <div style="align-self: flex-start; max-width: 80%; display: flex; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; background: var(--color-info-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-info); flex-shrink: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </div>
+                                <div style="background: var(--color-surface-hover); color: var(--color-text); padding: 0.75rem 1rem; border-radius: 1rem 1rem 1rem 0;">
+                                    {{ assistant_reply|nl2br }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div id="empty-state" style="text-align: center; margin-top: auto; margin-bottom: auto; padding: 2rem;">
+                            <div style="width: 64px; height: 64px; background: var(--color-info-light); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--color-info); margin: 0 auto 1rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">How can I help you today?</h3>
+                            <p style="color: var(--color-text-light);">
+                                {% if mode == 'symptoms' %}Describe your symptoms for a preliminary analysis{% else %}Ask me general medical questions or health advice{% endif %}
+                            </p>
                         </div>
                     {% endif %}
+                </div>
 
-{% if assistant_reply %}
-<div class="chat-message-row ai">
-    <div class="chat-message chat-message-ai">
-{{ assistant_reply }}
-    </div>
-</div>
-{% endif %}
-                {% else %}
-                    <div class="empty-state" id="empty-state">
-                        <div class="empty-icon">💬</div>
-                        <p>{% if mode == 'symptoms' %}Describe your symptoms to get started{% else %}Ask me anything about your health{% endif %}</p>
-                    </div>
-                {% endif %}
+                <div style="padding: 1rem; border-top: 1px solid var(--color-border); background: var(--color-surface);">
+                    <form method="post" action="{{ url_for('main.chatbot', mode=mode) }}" id="chatbot-form" style="display: flex; gap: 0.75rem;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="mode" id="mode-input" value="{{ mode or 'chat' }}">
+                        <textarea
+                            name="message"
+                            id="message-input"
+                            class="form-input"
+                            placeholder="{% if mode == 'symptoms' %}Describe your symptoms...{% else %}Type your message...{% endif %}"
+                            required
+                            rows="1"
+                            style="resize: none; min-height: 44px; padding-top: 0.75rem;"
+                        ></textarea>
+                        <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </form>
+                </div>
             </div>
-
-            <form method="post" action="{{ url_for('main.chatbot', mode=mode) }}" id="chatbot-form" class="chatbot-form">
-                <input type="hidden" name="mode" id="mode-input" value="{{ mode or 'chat' }}">
-                <textarea
-                    name="message"
-                    id="message-input"
-                    class="chat-input"
-                    placeholder="{% if mode == 'symptoms' %}Describe your symptoms...{% else %}Type your message...{% endif %}"
-                    required
-                    rows="2"
-                ></textarea>
-                <button type="submit" id="submit-btn" class="btn btn-primary btn-send">
-                    <span>{% if mode == 'symptoms' %}Analyze{% else %}Send{% endif %}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </form>
         </div>
-    </div>
+    </main>
 
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
         function switchMode(newMode) {
-            // Update active button
-            document.getElementById('btn-chat').classList.remove('active');
-            document.getElementById('btn-symptoms').classList.remove('active');
+            // Update buttons
+            const btnChat = document.getElementById('btn-chat');
+            const btnSymptoms = document.getElementById('btn-symptoms');
             
-            if (newMode === 'chat') {
-                document.getElementById('btn-chat').classList.add('active');
-            } else {
-                document.getElementById('btn-symptoms').classList.add('active');
-            }
+            // Reset styles
+            btnChat.className = 'btn';
+            btnChat.style.background = 'transparent';
+            btnChat.style.color = 'var(--color-text-light)';
+            btnChat.style.border = 'none';
+            
+            btnSymptoms.className = 'btn';
+            btnSymptoms.style.background = 'transparent';
+            btnSymptoms.style.color = 'var(--color-text-light)';
+            btnSymptoms.style.border = 'none';
+            
+            // Set active style
+            const activeBtn = newMode === 'chat' ? btnChat : btnSymptoms;
+            activeBtn.className = 'btn btn-primary';
+            activeBtn.style.background = '';
+            activeBtn.style.color = '';
+            activeBtn.style.border = '';
 
             // Update hidden input
             document.getElementById('mode-input').value = newMode;
@@ -131,25 +199,20 @@
 
             // Update placeholder
             const textarea = document.getElementById('message-input');
-            const submitBtn = document.getElementById('submit-btn');
-
             if (newMode === 'symptoms') {
                 textarea.placeholder = 'Describe your symptoms...';
-                submitBtn.innerHTML = '<span>Analyze</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
             } else {
                 textarea.placeholder = 'Type your message...';
-                submitBtn.innerHTML = '<span>Send</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
             }
 
-            // Update empty state if no messages
+            // Update empty state text
             const emptyState = document.getElementById('empty-state');
             if (emptyState) {
-                const emptyIcon = emptyState.querySelector('.empty-icon');
-                const emptyText = emptyState.querySelector('p');
+                const p = emptyState.querySelector('p');
                 if (newMode === 'symptoms') {
-                    if (emptyText) emptyText.textContent = 'Describe your symptoms to get started';
+                    p.textContent = 'Describe your symptoms for a preliminary analysis';
                 } else {
-                    if (emptyText) emptyText.textContent = 'Ask me anything about your health';
+                    p.textContent = 'Ask me general medical questions or health advice';
                 }
             }
         }
@@ -159,6 +222,16 @@
         if (chatBox) {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+        
+        // Auto-resize textarea
+        const textarea = document.getElementById('message-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if (this.value === '') {
+                this.style.height = '44px';
+            }
+        });
     </script>
 </body>
 </html>

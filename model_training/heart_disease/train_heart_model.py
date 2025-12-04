@@ -87,3 +87,7 @@ def main() -> None: # Train RandomForest model ->  then save it as a pickle file
 
 if __name__ == "__main__":
     main()
+    
+    
+    
+    

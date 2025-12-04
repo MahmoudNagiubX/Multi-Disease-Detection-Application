@@ -1,16 +1,12 @@
 from typing import Dict, Any, Optional
 from datetime import datetime, timezone
-from app.core.managers.database_manager import db_manager, DatabaseManager
+from app.core.managers.database_manager import db_manager
 from app.core.managers.model_manager import model_manager
-from app.services.base_service import BaseService
 
-
-class PredictionService(BaseService):    # Handles prediction logic for heart disease and brain tumor
+class PredictionService:    # Handles prediction logic for heart disease and brain tumor
     # Uses ModelManager to access models and DatabaseManager to log results
-    def __init__(self, db: DatabaseManager = db_manager) -> None:
-        super().__init__(db)
-        # Preserve original public attributes
-        self.db = self._db
+    def __init__(self) -> None:
+        self.db = db_manager
         self.models = model_manager
         
     @staticmethod

@@ -1,5 +1,9 @@
 # App entry point
+from dotenv import load_dotenv
 from app import create_app
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create the Flask application using the factory function
 app = create_app()

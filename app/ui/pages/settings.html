@@ -1,195 +1,182 @@
-<!-- Uses dashboard_layout.html (extends base.html) -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Account Settings – Multi Disease Detection System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - MDDS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('mdds-theme') || 
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
-            <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('main.heart_disease') }}" class="nav-link">Heart</a>
-                <a href="{{ url_for('main.brain_tumor') }}" class="nav-link">Brain</a>
-                <a href="{{ url_for('main.chatbot') }}" class="nav-link">Chatbot</a>
-                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
+<body class="layout-dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('main.dashboard') }}" class="sidebar-brand">
+                <div style="width: 32px; height: 32px; background: var(--color-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                </div>
+                <span>MDDS</span>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Menu</div>
+            
+            <a href="{{ url_for('main.dashboard') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </a>
+            
+            <a href="{{ url_for('main.heart_disease') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                Heart Disease
+            </a>
+            
+            <a href="{{ url_for('main.brain_tumor') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>
+                Brain MRI
+            </a>
+            
+            <a href="{{ url_for('main.chatbot') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                AI Assistant
+            </a>
+            
+            <div style="flex: 1;"></div>
+            
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Settings</div>
+            
+            <div style="padding: 0 1rem; margin-bottom: 1rem;">
+                <div class="pill-toggle" id="themeToggle">
+                    <div class="pill-option active" data-theme="light">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </div>
+                    <div class="pill-option" data-theme="dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+            
+            <a href="{{ url_for('main.settings') }}" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </a>
+            
+            <a href="{{ url_for('main.logout') }}" class="nav-item" style="color: var(--color-error);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Sign Out
+            </a>
+        </nav>
+    </aside>
 
-<div class="page-container">
-    <div class="card">
-        <h1>Account Settings</h1>
-        <p class="subtitle">
-            Manage your profile, security, and data for the Multi Disease Detection System.
-        </p>
-
-        <!-- Flash messages -->
-        <div class="flash-container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
-                            <span class="flash-type">
-                                {% if category == 'success' %}Success{% else %}Notice{% endif %}
-                            </span>
-                            <span class="flash-msg">{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Mobile Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
+            <button class="menu-toggle" id="menuToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            
+            <div style="font-weight: 600; color: var(--color-text);">Account Settings</div>
         </div>
 
-        <div class="settings-grid">
-            <!-- Left column: Profile + Password + History -->
-            <div class="left-col">
-                <!-- Profile section -->
-                <div class="card profile-card">
-                    <div class="card-title">Profile</div>
-                    <p class="text-muted">
-                        Basic information about your account. You can use this account to access all features:
-                        heart detection, brain MRI analysis, and the AI doctor chatbot.
-                    </p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" style="display:none;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-                    <div class="profile-row">
-                        <div>
-                            <div class="profile-label">Username</div>
-                            <div class="profile-value">{{ profile.username }}</div>
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="grid grid-2">
+                <!-- Left Column -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Profile Card -->
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="width: 48px; height: 48px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; font-weight: 600;">
+                                {{ profile.username[0] | upper }}
+                            </div>
+                            <div>
+                                <h2 style="font-size: 1.25rem; margin-bottom: 0.25rem;">{{ profile.username }}</h2>
+                                <p style="color: var(--color-text-light); font-size: 0.875rem;">{{ profile.email }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <div class="profile-label">Email</div>
-                            <div class="profile-value">{{ profile.email }}</div>
+                        
+                        <div style="padding-top: 1rem; border-top: 1px solid var(--color-border);">
+                            <div style="font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 0.25rem;">Member Since</div>
+                            <div style="font-weight: 500;">{{ profile.created_at }}</div>
                         </div>
-                        <div>
-                            <div class="profile-label">Member since</div>
-                            <div class="profile-value">{{ profile.created_at }}</div>
-                        </div>
+                    </div>
+
+                    <!-- Change Password -->
+                    <div class="card">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Security</h3>
+                        <form method="post" action="{{ url_for('main.change_password') }}">
+                            <div class="form-group">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="old_password" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" name="new_password" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-input" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full">Update Password</button>
+                        </form>
                     </div>
                 </div>
 
-                <!-- Change password -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-title">Change password</div>
-                    <p class="text-muted">
-                        Update your password to keep your account secure. Your password is always stored
-                        as a secure hash – never in plain text.
-                    </p>
+                <!-- Right Column -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Data Management -->
+                    <div class="card">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Data Management</h3>
+                        <p style="color: var(--color-text-light); font-size: 0.875rem; margin-bottom: 1.5rem;">
+                            Manage your prediction history and account data.
+                        </p>
 
-                    <form method="post" action="{{ url_for('main.change_password') }}">
-                        <div class="form-group">
-                            <label for="old_password" class="form-label">Current password</label>
-                            <input
-                                type="password"
-                                id="old_password"
-                                name="old_password"
-                                class="form-input"
-                                required
-                            />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="new_password" class="form-label">New password</label>
-                            <input
-                                type="password"
-                                id="new_password"
-                                name="new_password"
-                                class="form-input"
-                                required
-                            />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirm_password" class="form-label">Confirm new password</label>
-                            <input
-                                type="password"
-                                id="confirm_password"
-                                name="confirm_password"
-                                class="form-input"
-                                required
-                            />
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                Update password
+                        <form method="post" action="{{ url_for('main.clear_history') }}" onsubmit="return confirm('Are you sure you want to clear all prediction history? This cannot be undone.');" style="margin-bottom: 1rem;">
+                            <button type="submit" class="btn btn-primary btn-full">
+                                Clear Prediction History
                             </button>
+                        </form>
+
+                        <form method="post" action="{{ url_for('main.delete_account') }}" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.');">
+                            <button type="submit" class="btn btn-full" style="background: #fee2e2; color: #ef4444; border: none;">
+                                Delete Account
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- About -->
+                    <div class="card" style="background: var(--color-surface-hover);">
+                        <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">About MDDS</h3>
+                        <p style="font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 1rem; line-height: 1.6;">
+                            The Multi Disease Detection System combines machine learning models for heart disease risk estimation and deep learning for brain MRI classification.
+                        </p>
+                        <div style="font-size: 0.75rem; color: var(--color-text-lighter); padding-top: 1rem; border-top: 1px solid var(--color-border);">
+                            <strong>Medical Disclaimer:</strong> This application is for educational purposes only. Always consult a qualified healthcare professional for medical advice.
                         </div>
-                    </form>
-                </div>
-
-                <!-- Clear history -->
-                <div class="card warning-card" style="margin-top: 1rem;">
-                    <div class="card-title">Prediction history</div>
-                    <p class="text-muted">
-                        You can clear all saved logs for your heart and brain predictions. This only affects
-                        stored records; it does not change the models or your account.
-                    </p>
-
-                    <form
-                        method="post"
-                        action="{{ url_for('main.clear_history') }}"
-                        onsubmit="return confirm('Are you sure you want to clear all prediction history? This cannot be undone.');"
-                    >
-                        <button type="submit" class="btn btn-outline">
-                            Clear prediction history
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right column: Danger zone + About -->
-            <div class="right-col">
-                <!-- Danger zone: delete account -->
-                <div class="danger-card card">
-                    <h3>Delete account</h3>
-                    <p class="text-muted">
-                        Deleting your account will permanently remove your login and any associated prediction
-                        logs. This action cannot be undone.
-                    </p>
-
-                    <form
-                        method="post"
-                        action="{{ url_for('main.delete_account') }}"
-                        onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.');"
-                    >
-                        <button type="submit" class="btn btn-danger">
-                            Delete my account
-                        </button>
-                    </form>
-                </div>
-
-                <!-- About & medical disclaimer -->
-                <div class="card" style="margin-top: 1rem;">
-                    <div class="card-title">About this application</div>
-                    <p class="text-muted">
-                        <strong>Multi Disease Detection System</strong>
-                        is an educational web application that combines machine-learning models
-                        for heart-disease risk estimation and deep-learning models for brain MRI
-                        classification (glioma, meningioma, pituitary, or no tumor).
-                    </p>
-                    <p class="text-muted">
-                        The integrated AI doctor chatbot uses a large language model to help you
-                        understand your results and general medical topics in simple language.
-                        It automatically uses your latest heart and brain model outputs as context
-                        when answering.
-                    </p>
-
-                    <div class="disclaimer">
-                        <strong>Medical disclaimer:</strong>
-                        All predictions and explanations in this application are for
-                        <strong>educational purposes only</strong>. The models can be wrong, and
-                        nothing here should be treated as a diagnosis, prescription, or a substitute
-                        for professional medical advice. Always consult a qualified doctor or
-                        healthcare provider for any decisions about your health.
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

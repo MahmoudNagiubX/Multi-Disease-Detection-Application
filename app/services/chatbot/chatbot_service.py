@@ -1,18 +1,13 @@
 from __future__ import annotations
 from typing import Optional, Dict, Any
-from app.core.managers.database_manager import db_manager, DatabaseManager
+from app.core.managers.database_manager import db_manager
 from groq import Groq
 import os
-from app.services.base_service import BaseService
 
-
-class ChatbotService(BaseService):
+class ChatbotService:
     # Build a system prompt (rules for the AI doctor) -> Build user-specific medical context from prediction_logs
     # -> Combine that context with the user's message
-    def __init__(self, db: DatabaseManager = db_manager) -> None:
-        super().__init__(db)
-        # Optional public alias for consistency with other services
-        self.db = self._db
+    def __init__(self) -> None:
         self.api_key: Optional[str] = os.getenv("GROQ_API_KEY") # Groq-related configuration
         self.model_name: str = "llama-3.1-8b-instant"
         self._client: Optional[Groq] = None
@@ -73,7 +68,7 @@ class ChatbotService(BaseService):
     ) -> Optional[Dict[str, Any]]:
         
         try:
-            row = self.db.fetch_one(
+            row = db_manager.fetch_one(
                 """
                 SELECT id, user_id, model_type, input_summary,
                        prediction_result, probability, created_at

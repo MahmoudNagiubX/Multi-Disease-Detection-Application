@@ -30,7 +30,7 @@ main_bp = Blueprint("main", __name__)
 # will look for files in app/ui/uploads/brain/
 # routes.py is in app/, so Path(__file__).parent is app/
 BASE_DIR = Path(__file__).parent  # app/
-BRAIN_UPLOAD_DIR = BASE_DIR / "ui" / "uploads" / "brain"
+BRAIN_UPLOAD_DIR = BASE_DIR / "ui" / "static" / "uploads" / "brain"
 BRAIN_UPLOAD_DIR.mkdir(parents = True, exist_ok = True)
 
 # Allowed MRI image extensions

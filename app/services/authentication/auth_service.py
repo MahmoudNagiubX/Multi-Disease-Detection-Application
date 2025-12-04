@@ -1,15 +1,10 @@
 from typing import Tuple, Union
-from app.core.managers.database_manager import db_manager, DatabaseManager
+from app.core.managers.database_manager import db_manager
 from app.models.user.user import User
-from app.services.base_service import BaseService
 
-
-class AuthService(BaseService):  # Handles user registration, login, and password changes
-    def __init__(self, db: DatabaseManager = db_manager) -> None:
-        # Initialize shared BaseService database attribute
-        super().__init__(db)
-        # Preserve existing public attribute name for backward compatibility
-        self.db = self._db
+class AuthService:  # Handles user registration, login, and password changes
+    def __init__(self) -> None:
+        self.db = db_manager
     
     def register(self, username: str, email: str, password: str) -> Tuple[bool, str]: # Register a new user
         

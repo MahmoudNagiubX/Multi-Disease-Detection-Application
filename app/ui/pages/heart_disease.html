@@ -3,222 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heart Disease Risk Assessment – Multi Disease Detection System</title>
+    <title>Heart Disease Risk Assessment - MDDS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('mdds-theme') || 
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('main.dashboard') }}" class="nav-brand">🩺 Multi Disease Detection System</a>
-            <div class="nav-links">
-                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('main.heart_disease') }}" class="nav-link active">Heart</a>
-                <a href="{{ url_for('main.brain_tumor') }}" class="nav-link">Brain</a>
-                <a href="{{ url_for('main.chatbot') }}" class="nav-link">Chatbot</a>
-                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
+<body class="layout-dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('main.dashboard') }}" class="sidebar-brand">
+                <div style="width: 32px; height: 32px; background: var(--color-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                </div>
+                <span>MDDS</span>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Menu</div>
+            
+            <a href="{{ url_for('main.dashboard') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </a>
+            
+            <a href="{{ url_for('main.heart_disease') }}" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                Heart Disease
+            </a>
+            
+            <a href="{{ url_for('main.brain_tumor') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>
+                Brain MRI
+            </a>
+            
+            <a href="{{ url_for('main.chatbot') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                AI Assistant
+            </a>
+            
+            <div style="flex: 1;"></div>
+            
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-lighter); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 1rem; margin-bottom: 0.5rem;">Settings</div>
+            
+            <div style="padding: 0 1rem; margin-bottom: 1rem;">
+                <div class="pill-toggle" id="themeToggle">
+                    <div class="pill-option active" data-theme="light">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </div>
+                    <div class="pill-option" data-theme="dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('main.settings') }}" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </a>
+            
+            <a href="{{ url_for('main.logout') }}" class="nav-item" style="color: var(--color-error);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" style="position: relative;">
+        <!-- ECG Heartbeat Background Animation -->
+        <div class="ecg-background">
+            <div class="ecg-line">
+                <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <!-- Randomized heartbeat with varied pulse heights -->
+                    <path d="M0,60 L150,60 L165,60 L172,35 L179,85 L186,60 L200,60 
+                             L350,60 L368,60 L376,25 L384,95 L392,60 L410,60 
+                             L560,60 L575,60 L583,45 L591,75 L599,60 L615,60 
+                             L765,60 L783,60 L792,20 L801,100 L810,60 L828,60 
+                             L978,60 L993,60 L1002,40 L1011,80 L1020,60 L1038,60 L1200,60" 
+                          fill="none" 
+                          stroke-width="2" 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round"/>
+                </svg>
             </div>
         </div>
-    </nav>
-
-    <div class="page-container">
-        <div class="page-header">
-            <div class="heart-header">
-                <div class="heart-header-icon">🫀</div>
-                <h1>Heart Disease Risk Assessment</h1>
-            </div>
-            <div class="info-box">
-                Enter your clinical data to estimate heart disease risk. This is educational only, not a diagnosis.
-            </div>
+        
+        <!-- Mobile Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
+            <button class="menu-toggle" id="menuToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            
+            <div style="font-weight: 600; color: var(--color-text);">Heart Disease Assessment</div>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
-                        <span class="flash-type">
-                            {% if category == 'success' %}Success{% else %}Notice{% endif %}
-                        </span>
-                        <span class="flash-msg">{{ message }}</span>
-                    </div>
+                    <div class="flash flash-{{ category }}" style="display:none;">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <!-- Input Form Card - Full Width -->
-        <div class="card heart-form-card">
-            <div class="form-header">
-                <h2>📋 Clinical Data Entry</h2>
-                <p class="form-subtitle">Please enter all required clinical parameters for accurate risk assessment</p>
+        <div style="max-width: 600px; margin: 0 auto;">
+            <div class="card" style="margin-bottom: 2rem; padding: 1.25rem;">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="width: 48px; height: 48px; background: var(--color-error-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--color-error); margin: 0 auto 0.75rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                    </div>
+                    <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Clinical Assessment</h1>
+                    <p style="color: var(--color-text-light); font-size: 0.875rem;">Enter patient data for AI-powered risk analysis</p>
+                </div>
+
+                <form method="post" action="{{ url_for('main.heart_disease') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label for="age" class="form-label">Age (years)</label>
+                            <input type="number" id="age" name="age" class="form-input" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex" class="form-label">Sex</label>
+                            <select id="sex" name="sex" class="form-select" required>
+                                <option value="1">Male</option>
+                                <option value="0">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cp" class="form-label">Chest Pain Type</label>
+                            <select id="cp" name="cp" class="form-select" required>
+                                <option value="0">Typical angina</option>
+                                <option value="1">Atypical angina</option>
+                                <option value="2">Non-anginal pain</option>
+                                <option value="3">Asymptomatic</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trestbps" class="form-label">Resting BP (mm Hg)</label>
+                            <input type="number" id="trestbps" name="trestbps" class="form-input" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="chol" class="form-label">Cholesterol (mg/dL)</label>
+                            <input type="number" id="chol" name="chol" class="form-input" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fbs" class="form-label">Fasting Blood Sugar > 120</label>
+                            <select id="fbs" name="fbs" class="form-select" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="restecg" class="form-label">Resting ECG</label>
+                            <select id="restecg" name="restecg" class="form-select" required>
+                                <option value="0">Normal</option>
+                                <option value="1">ST-T wave abnormality</option>
+                                <option value="2">Left ventricular hypertrophy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="thalach" class="form-label">Max Heart Rate</label>
+                            <input type="number" id="thalach" name="thalach" class="form-input" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exang" class="form-label">Exercise Induced Angina</label>
+                            <select id="exang" name="exang" class="form-select" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="oldpeak" class="form-label">ST Depression</label>
+                            <input type="number" id="oldpeak" name="oldpeak" class="form-input" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slope" class="form-label">ST Segment Slope</label>
+                            <select id="slope" name="slope" class="form-select" required>
+                                <option value="0">Upsloping</option>
+                                <option value="1">Flat</option>
+                                <option value="2">Downsloping</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ca" class="form-label">Major Vessels (0-3)</label>
+                            <input type="number" id="ca" name="ca" class="form-input" min="0" max="3" required>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="thal" class="form-label">Thalassemia</label>
+                            <select id="thal" name="thal" class="form-select" required>
+                                <option value="1">Normal</option>
+                                <option value="2">Fixed defect</option>
+                                <option value="3">Reversible defect</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary btn-full btn-lg">
+                            Run Analysis
+                        </button>
+                    </div>
+                </form>
             </div>
-            <form method="post" action="{{ url_for('main.heart_disease') }}" class="heart-form">
-                <div class="form-sections-grid">
-                    <div class="form-section">
-                        <div class="form-section-header">
-                            <span class="section-icon">👤</span>
-                            <h3 class="form-legend">Personal Information</h3>
-                        </div>
-                        <div class="form-fields">
-                            <div class="form-group">
-                                <label for="age" class="form-label">Age (years)</label>
-                                <input type="number" id="age" name="age" class="form-input" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sex" class="form-label">Sex</label>
-                                <select id="sex" name="sex" class="form-select" required>
-                                    <option value="1">Male</option>
-                                    <option value="0">Female</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="cp" class="form-label">Chest Pain Type (cp)</label>
-                                <select id="cp" name="cp" class="form-select" required>
-                                    <option value="0">0 – Typical angina</option>
-                                    <option value="1">1 – Atypical angina</option>
-                                    <option value="2">2 – Non-anginal pain</option>
-                                    <option value="3">3 – Asymptomatic</option>
-                                </select>
-                            </div>
+
+            {% if result %}
+            <div class="card" style="border-left: 4px solid {% if result.risk_label == 'High' %}var(--color-error){% elif result.risk_label == 'Medium' %}var(--color-warning){% else %}var(--color-success){% endif %};">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Analysis Results</h2>
+                
+                <div class="grid grid-2" style="margin-bottom: 2rem;">
+                    <div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 0.25rem;">Risk Level</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: {% if result.risk_label == 'High' %}var(--color-error){% elif result.risk_label == 'Medium' %}var(--color-warning){% else %}var(--color-success){% endif %};">
+                            {{ result.risk_label }} Risk
                         </div>
                     </div>
-
-                    <div class="form-section">
-                        <div class="form-section-header">
-                            <span class="section-icon">🩺</span>
-                            <h3 class="form-legend">Blood Pressure & Cholesterol</h3>
-                        </div>
-                        <div class="form-fields">
-                            <div class="form-group">
-                                <label for="trestbps" class="form-label">Resting Blood Pressure (mm Hg)</label>
-                                <input type="number" id="trestbps" name="trestbps" class="form-input" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="chol" class="form-label">Cholesterol (mg/dL)</label>
-                                <input type="number" id="chol" name="chol" class="form-input" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="fbs" class="form-label">Fasting Blood Sugar > 120 mg/dL</label>
-                                <select id="fbs" name="fbs" class="form-select" required>
-                                    <option value="0">No (≤ 120 mg/dL)</option>
-                                    <option value="1">Yes (> 120 mg/dL)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <div class="form-section-header">
-                            <span class="section-icon">💓</span>
-                            <h3 class="form-legend">ECG & Exercise Data</h3>
-                        </div>
-                        <div class="form-fields">
-                            <div class="form-group">
-                                <label for="restecg" class="form-label">Resting ECG</label>
-                                <select id="restecg" name="restecg" class="form-select" required>
-                                    <option value="0">0 – Normal</option>
-                                    <option value="1">1 – ST-T wave abnormality</option>
-                                    <option value="2">2 – Left ventricular hypertrophy</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="thalach" class="form-label">Maximum Heart Rate Achieved</label>
-                                <input type="number" id="thalach" name="thalach" class="form-input" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="exang" class="form-label">Exercise-induced Angina</label>
-                                <select id="exang" name="exang" class="form-select" required>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="oldpeak" class="form-label">ST Depression Induced by Exercise</label>
-                                <input type="number" id="oldpeak" name="oldpeak" class="form-input" step="0.1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="slope" class="form-label">Slope of Peak Exercise ST Segment</label>
-                                <select id="slope" name="slope" class="form-select" required>
-                                    <option value="0">0 – Upsloping</option>
-                                    <option value="1">1 – Flat</option>
-                                    <option value="2">2 – Downsloping</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <div class="form-section-header">
-                            <span class="section-icon">🔬</span>
-                            <h3 class="form-legend">Vessels & Thalassemia</h3>
-                        </div>
-                        <div class="form-fields">
-                            <div class="form-group">
-                                <label for="ca" class="form-label">Number of Major Vessels (0–3)</label>
-                                <input type="number" id="ca" name="ca" class="form-input" min="0" max="3" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="thal" class="form-label">Thalassemia</label>
-                                <select id="thal" name="thal" class="form-select" required>
-                                    <option value="1">1 – Normal</option>
-                                    <option value="2">2 – Fixed defect</option>
-                                    <option value="3">3 – Reversible defect</option>
-                                </select>
-                            </div>
+                    <div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 0.25rem;">Probability</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-text);">
+                            {{ (result.probability * 100) | round(1) }}%
                         </div>
                     </div>
                 </div>
 
-                <div class="form-submit-wrapper">
-                    <button type="submit" class="btn btn-heart btn-full">🔍 Predict Risk</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Results Card -->
-        {% if result %}
-        <div class="heart-result-card card" style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-                <div class="result-header">
-                    <div class="result-icon">🫀</div>
-                    <h2>Prediction Result</h2>
+                <div style="background: var(--color-surface-hover); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Medical Suggestion</h3>
+                    <p style="color: var(--color-text-light);">{{ result.suggestion }}</p>
                 </div>
 
-                <div class="result-item">
-                    <div class="result-label">Risk Level</div>
-                    <div class="result-value">
-                        {{ result.risk_label if result.risk_label is defined else result["risk_label"] }}
-                        <span class="risk-badge {% if (result.risk_label if result.risk_label is defined else result['risk_label']) == 'High' %}risk-high{% elif (result.risk_label if result.risk_label is defined else result['risk_label']) == 'Medium' %}risk-medium{% else %}risk-low{% endif %}">
-                            {{ result.risk_label if result.risk_label is defined else result["risk_label"] }} Risk
-                        </span>
-                    </div>
-                </div>
-
-                <div class="result-item">
-                    <div class="result-label">Estimated Probability</div>
-                    <div class="result-value">
-                        {{ ((result.probability if result.probability is defined else result["probability"]) * 100) | round(1) }}%
-                    </div>
-                </div>
-
-                <div class="result-item">
-                    <div class="result-label">Suggestion</div>
-                    <div class="suggestion-box">
-                        <p>{{ result.suggestion if result.suggestion is defined else result["suggestion"] }}</p>
-                    </div>
-                </div>
-
-                {% if result and result.log_id is not none %}
-                <a href="{{ url_for('main.heart_report', log_id=result.log_id) }}" class="btn btn-secondary">
-                    📄 Download Heart Report (PDF)
+                {% if result.log_id %}
+                <a href="{{ url_for('main.heart_report', log_id=result.log_id) }}" class="btn btn-secondary btn-full">
+                    Download Detailed Report (PDF)
                 </a>
                 {% endif %}
-
-                <p class="disclaimer">
-                    This result is approximate and not a medical diagnosis. Always consult a qualified healthcare professional.
-                </p>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
+    </main>
 
-        <a href="{{ url_for('main.dashboard') }}" class="back-link">← Back to Dashboard</a>
-    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
