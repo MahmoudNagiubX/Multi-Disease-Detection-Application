@@ -73,13 +73,13 @@
                         </div>
                     {% endif %}
 
-                    {% if assistant_reply %}
-                        <div class="chat-message-row ai">
-                            <div class="chat-message chat-message-ai">
-                                {{ assistant_reply|nl2br }}
-                            </div>
-                        </div>
-                    {% endif %}
+{% if assistant_reply %}
+<div class="chat-message-row ai">
+    <div class="chat-message chat-message-ai">
+{{ assistant_reply }}
+    </div>
+</div>
+{% endif %}
                 {% else %}
                     <div class="empty-state" id="empty-state">
                         <div class="empty-icon">💬</div>

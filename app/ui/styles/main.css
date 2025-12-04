@@ -1297,6 +1297,8 @@ input[type="file"]:hover {
   word-wrap: break-word;
   position: relative;
   font-family: inherit;
+  white-space: pre-wrap;
+  text-align: left;
 }
 
 .chat-message-user {
@@ -1308,6 +1310,8 @@ input[type="file"]:hover {
   border-radius: 999px 999px 0 999px;
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  white-space: pre-wrap;
+  text-align: left;
 }
 
 .chat-message-ai {
@@ -1320,6 +1324,8 @@ input[type="file"]:hover {
   background: linear-gradient(135deg, #f5f3ff, #eef2ff);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
   border: 1px solid rgba(148, 163, 184, 0.4);
+  white-space: pre-wrap;
+  text-align: left;
 }
 
 .empty-state {
